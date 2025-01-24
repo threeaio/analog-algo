@@ -1,5 +1,12 @@
-import { BaseShape, Point } from './base-shape';
+import { BaseShape, Point, PatternConfig } from './base-shape';
 import { GridSystem, GridConfig } from '../grid/grid-system';
+
+interface TriangleConfig {
+  gridConfig?: GridConfig;
+  color?: string;
+  offset?: number;
+  pattern?: PatternConfig;
+}
 
 export class TriangleWalker extends BaseShape {
   private vertices: Point[];
@@ -9,33 +16,22 @@ export class TriangleWalker extends BaseShape {
   private animationSpeed: number;
   private pauseDuration: number;
   private lastPauseTime: number;
-  private config: {
-    gridConfig?: GridConfig,
-    color?: string,
-    offset?: number
-  } | undefined;
+  private config: TriangleConfig;
+  private grid: GridSystem;
 
-  constructor(ctx: CanvasRenderingContext2D, config?: {
-    gridConfig?: GridConfig,
-    color?: string
-    offset?: number
-  }) {
-    super(ctx);
-    this.config = config;
-    const grid = new GridSystem(ctx, config?.gridConfig);
-    this.gridPoints = grid.getPerimeterPoints();
+  constructor(ctx: CanvasRenderingContext2D, config?: TriangleConfig) {
+    super(ctx, config?.pattern);
+    this.config = config ?? {};
+    this.grid = new GridSystem(ctx, config?.gridConfig);
+    this.gridPoints = this.grid.getPerimeterPoints();
     
-    // Initialize triangle vertices at specific positions:
-    // First point (0): top-left
-    // Second point (numRows): bottom-left
-    // Third point (numRows + numCols): bottom-right
     const numCols = config?.gridConfig?.numCols ?? 8;
     const numRows = config?.gridConfig?.numRows ?? 8;
     
     this.vertices = [
-      this.gridPoints[0 + (this.config?.offset ?? 0)], // top-left
-      this.gridPoints[numRows + numCols + (this.config?.offset ?? 0)], // bottom-rght
-      this.gridPoints[numRows * 2 + numCols + (this.config?.offset ?? 0)] // bottom-left
+      this.gridPoints[0 + (this.config.offset ?? 0)], // top-left
+      this.gridPoints[numRows + numCols + (this.config.offset ?? 0)], // bottom-right
+      this.gridPoints[numRows * 2 + numCols + (this.config.offset ?? 0)] // bottom-left
     ];
     
     this.targetVertices = [];
@@ -46,7 +42,10 @@ export class TriangleWalker extends BaseShape {
   }
 
   public draw(): void {
-    this.ctx.fillStyle = this.config?.color ?? '#b13';
+    const cellSize = this.grid.getCellSize();
+    const pattern = this.createStripePattern(cellSize);
+
+    this.ctx.fillStyle = pattern ?? (this.config.color ?? '#b13');
     this.ctx.beginPath();
     this.ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
     this.ctx.lineTo(this.vertices[1].x, this.vertices[1].y);

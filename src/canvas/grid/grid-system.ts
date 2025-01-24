@@ -23,6 +23,10 @@ export class GridSystem {
     this.height = ctx.canvas.height / window.devicePixelRatio;
   }
 
+  public getCellSize(): number {
+    return this.width / this.numCols; // Since we're using a square grid, width/numCols === height/numRows
+  }
+
   public draw() {
     const rowHeight = this.height / this.numRows;
     const colWidth = this.width / this.numCols;

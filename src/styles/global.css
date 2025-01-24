@@ -23,7 +23,3 @@ body {
   background-color: hsl(var(--color-3a-gray-darkest));
   color: hsl(var(--color-3a-white));
 }
-
-canvas {
-  image-rendering: pixelated;
-}
