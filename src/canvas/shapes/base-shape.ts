@@ -56,7 +56,7 @@ export abstract class BaseShape {
     
     // Create a pattern canvas
     const patternCanvas = document.createElement('canvas');
-    const size = cellSize * 2; // Make it 2x2 cells to ensure proper tiling
+    const size = cellSize * 16; // Make it bigger to ensure cleaner tiling
     patternCanvas.width = size;
     patternCanvas.height = size;
     

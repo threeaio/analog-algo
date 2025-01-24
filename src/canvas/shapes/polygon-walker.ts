@@ -1,7 +1,7 @@
 import { BaseShape, Point, PatternConfig, EasingType } from './base-shape';
 import { GridSystem, GridConfig } from '../grid/grid-system';
 
-interface TriangleConfig {
+interface PolygonConfig {
   gridConfig?: GridConfig;
   color?: string;
   offset?: number;
@@ -11,7 +11,11 @@ interface TriangleConfig {
   animationDuration?: number;
 }
 
-export class TriangleWalker extends BaseShape {
+interface VertexIndex {
+  index: number;
+}
+
+export class PolygonWalker extends BaseShape {
   private vertices: Point[];
   private targetVertices: Point[];
   private startVertices: Point[] | null = null;
@@ -21,29 +25,76 @@ export class TriangleWalker extends BaseShape {
   private animationDuration: number;
   private pauseDuration: number;
   private lastPauseTime: number;
-  private config: TriangleConfig;
+  private config: PolygonConfig;
   private grid: GridSystem;
 
-  constructor(ctx: CanvasRenderingContext2D, config?: TriangleConfig) {
+  constructor(ctx: CanvasRenderingContext2D, initialIndices: VertexIndex[], config?: PolygonConfig) {
     super(ctx, config?.pattern);
     this.config = config ?? {};
     this.grid = new GridSystem(ctx, config?.gridConfig);
     this.gridPoints = this.grid.getPerimeterPoints();
     
-    const numCols = config?.gridConfig?.numCols ?? 8;
-    const numRows = config?.gridConfig?.numRows ?? 8;
-    
-    this.vertices = [
-      this.gridPoints[0 + (this.config.offset ?? 0)], // top-left
-      this.gridPoints[numRows + numCols + (this.config.offset ?? 0)], // bottom-right
-      this.gridPoints[numRows * 2 + numCols + (this.config.offset ?? 0)] // bottom-left
-    ];
+    // Apply offset to initial vertices if specified
+    const offset = this.config.offset ?? 0;
+    this.vertices = initialIndices.map(({ index }) => {
+      const pointIndex = (index + offset) % this.gridPoints.length;
+      return this.gridPoints[pointIndex];
+    });
     
     this.targetVertices = [];
     this.isAnimating = false;
-    this.animationDuration = config?.animationDuration ?? 300; // default 1 second
+    this.animationDuration = config?.animationDuration ?? 300;
     this.pauseDuration = config?.pauseDuration ?? 300;
     this.lastPauseTime = 0;
+  }
+
+  // Factory method for creating a triangle
+  static createTriangle(ctx: CanvasRenderingContext2D, config?: PolygonConfig): PolygonWalker {
+    const numCols = config?.gridConfig?.numCols ?? 8;
+    const numRows = config?.gridConfig?.numRows ?? 8;
+    
+    // Define indices into the perimeter points array
+    const initialVertices = [
+      { index: 0 }, // top-left
+      { index: numRows }, // bottom-left
+      { index: numRows + numCols } // bottom-right
+    ];
+    
+    return new PolygonWalker(ctx, initialVertices, config);
+  }
+
+  // Factory method for creating a rectangle
+  static createRectangle(ctx: CanvasRenderingContext2D, config?: PolygonConfig): PolygonWalker {
+    const numCols = config?.gridConfig?.numCols ?? 8;
+    const numRows = config?.gridConfig?.numRows ?? 8;
+    
+    // Define indices into the perimeter points array
+    const initialVertices = [
+      { index: 0 }, // top-left
+      { index: numCols }, // top-right
+      { index: numRows + numCols }, // bottom-right
+      { index: numRows * 2 + numCols } // bottom-left
+    ];
+    
+    return new PolygonWalker(ctx, initialVertices, config);
+  }
+
+  // Factory method for creating a regular polygon
+  static createRegularPolygon(
+    ctx: CanvasRenderingContext2D, 
+    sides: number,
+    config?: PolygonConfig
+  ): PolygonWalker {
+    const numCols = config?.gridConfig?.numCols ?? 8;
+    const numRows = config?.gridConfig?.numRows ?? 8;
+    const totalPoints = (numRows + numCols) * 2;
+    const pointsPerSide = Math.floor(totalPoints / sides);
+    
+    const initialVertices = Array.from({ length: sides }, (_, i) => ({
+      index: (i * pointsPerSide) % totalPoints
+    }));
+    
+    return new PolygonWalker(ctx, initialVertices, config);
   }
 
   public draw(): void {
@@ -53,8 +104,12 @@ export class TriangleWalker extends BaseShape {
     this.ctx.fillStyle = pattern ?? (this.config.color ?? '#b13');
     this.ctx.beginPath();
     this.ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
-    this.ctx.lineTo(this.vertices[1].x, this.vertices[1].y);
-    this.ctx.lineTo(this.vertices[2].x, this.vertices[2].y);
+    
+    for (let i = 1; i < this.vertices.length; i++) {
+      this.ctx.lineTo(this.vertices[i].x, this.vertices[i].y);
+    }
+    
+    this.ctx.closePath();
     this.ctx.fill();
   }
 
@@ -94,7 +149,6 @@ export class TriangleWalker extends BaseShape {
     this.vertices = this.vertices.map((vertex, i) => {
       const start = this.startVertices![i];
       const target = this.targetVertices[i];
-      
       return this.lerpPoint(start, target, easedProgress);
     });
   }

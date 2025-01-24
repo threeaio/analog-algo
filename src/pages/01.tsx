@@ -1,7 +1,7 @@
 import * as React from "react"
 import type { HeadFC, PageProps } from "gatsby"
 import { SceneManager } from "@/canvas/core/scene-manager"
-import { TriangleWalker } from "@/canvas/shapes/triangle-walker"
+import { PolygonWalker } from "@/canvas/shapes/polygon-walker"
 import { PatternConfig } from "@/canvas/shapes/base-shape"
 
 const Page01: React.FC<PageProps> = () => {
@@ -12,7 +12,6 @@ const Page01: React.FC<PageProps> = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    
     // Initialize scene
     const scene = new SceneManager(canvas);
     
@@ -21,25 +20,44 @@ const Page01: React.FC<PageProps> = () => {
       stripeColor: '#c13',
       stripeDivisions: 16,
     }
-    // Add triangle walker
-    const triangle = new TriangleWalker(scene.getContext(),{
-      pauseDuration: 0,
+
+    // Create triangle with fast linear movement
+    const triangle = PolygonWalker.createTriangle(scene.getContext(), {
+      pattern: { ...basePattern },
       animationDuration: 200,
-      easing: 'linear',
-      pattern: {
-       ...basePattern
-      }
+      pauseDuration: 0,
+      easing: 'linear'
     });
-    const triangle2 = new TriangleWalker(scene.getContext(), {offset: 4,
+
+    const rectangle = PolygonWalker.createRectangle(scene.getContext(), {
+      pattern: { ...basePattern, patternOffset: true },
+      offset: 4,
+      animationDuration: 600,
       pauseDuration: 200,
+      easing: 'easeOut'
+    });
+
+    const pentagon = PolygonWalker.createRegularPolygon(scene.getContext(), 7, {
+      pattern: { ...basePattern, patternOffset: true },
+      offset: 9,
       animationDuration: 800,
-      easing: 'easeOut',
-        pattern: {
-      ...basePattern,
-      patternOffset: true
-    }});
-    scene.addShape(triangle);
-    scene.addShape(triangle2);
+      pauseDuration: 400,
+      easing: 'easeIn'
+    });
+
+    const pentagon2 = PolygonWalker.createRegularPolygon(scene.getContext(), 7, {
+      pattern: { ...basePattern, patternOffset: false },
+      offset: 0,
+      animationDuration: 800,
+      pauseDuration: 400,
+      easing: 'easeIn'
+    });
+
+    // Add shapes to scene
+    // scene.addShape(triangle);
+    // scene.addShape(rectangle);
+    scene.addShape(pentagon);
+    scene.addShape(pentagon2);
     // Start animation
     scene.start();
     
