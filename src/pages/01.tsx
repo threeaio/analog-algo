@@ -16,8 +16,9 @@ const Page01: React.FC<PageProps> = () => {
     
     // Add triangle walker
     const triangle = new TriangleWalker(scene.getContext());
+    const triangle2 = new TriangleWalker(scene.getContext(), {offset: 4});
     scene.addShape(triangle);
-    
+    scene.addShape(triangle2);
     // Start animation
     scene.start();
     
