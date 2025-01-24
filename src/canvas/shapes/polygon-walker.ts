@@ -113,6 +113,10 @@ export class PolygonWalker extends BaseShape {
     this.ctx.fill();
   }
 
+  public setAnimationDuration(duration: number): void {
+    this.animationDuration = duration;
+  }
+
   public update(deltaTime: number): void {
     if (!this.isAnimating) {
       const currentTime = performance.now();
