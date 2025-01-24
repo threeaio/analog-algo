@@ -48,6 +48,13 @@ export class SceneManager {
     }
   }
 
+  public updateShapeSpeed(id: string, duration: number): void {
+    const shape = this.shapes.get(id);
+    if (shape instanceof PolygonWalker) {
+      shape.setAnimationDuration(duration);
+    }
+  }
+
   public start() {
     if (this.animationFrameId === null) {
       this.lastFrameTime = performance.now();

@@ -8,42 +8,30 @@ export const basePattern: PatternConfig = {
 };
 
 export interface ShapeConfig {
-  create: (ctx: CanvasRenderingContext2D, speed: number) => PolygonWalker;
+  create: (ctx: CanvasRenderingContext2D) => PolygonWalker;
   label: string;
 }
 
 export const shapes: Record<string, ShapeConfig> = {
   triangle: {
-    create: (ctx, speed) => PolygonWalker.createTriangle(ctx, {
+    create: (ctx) => PolygonWalker.createTriangle(ctx, {
       pattern: { ...basePattern },
-      animationDuration: speed,
-      pauseDuration: 0,
-      easing: 'linear'
     }),
     label: 'Triangle'
   },
   rectangle: {
-    create: (ctx, speed) => PolygonWalker.createRectangle(ctx, {
+    create: (ctx) => PolygonWalker.createRectangle(ctx, {
       pattern: { 
         ...basePattern,
-        patternOffset: true,
       },
-      offset: 4,
-      animationDuration: speed,
-      pauseDuration: 200,
-      easing: 'easeOut'
     }),
     label: 'Rectangle'
   },
   pentagon: {
-    create: (ctx, speed) => PolygonWalker.createRegularPolygon(ctx, 7, {
+    create: (ctx) => PolygonWalker.createRegularPolygon(ctx, 7, {
       pattern: {
         ...basePattern,
       },
-      offset: 8,
-      animationDuration: speed,
-      pauseDuration: 400,
-      easing: 'easeIn'
     }),
     label: 'Pentagon'
   }
