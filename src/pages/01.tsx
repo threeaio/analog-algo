@@ -56,8 +56,8 @@ const Page01: React.FC<PageProps> = () => {
     // Add shapes to scene
     // scene.addShape(triangle);
     // scene.addShape(rectangle);
-    scene.addShape(pentagon);
-    scene.addShape(pentagon2);
+    // scene.addShape(rectangle);
+    scene.addShape(triangle);
     // Start animation
     scene.start();
     
@@ -73,12 +73,17 @@ const Page01: React.FC<PageProps> = () => {
   }, []);
 
   return (
-    <main className="p-24 font-sans flex justify-center items-center">
+    <div className="p-8">
+    <main className="grid grid-cols-2 h-full">
+      <div>
+        <h1>Pattern</h1>
+      </div>
       <canvas
-        className="w-1/2 aspect-square"
+        className="w-full aspect-square"
         ref={canvasRef}
       />
     </main>
+    </div>
   )
 }
 
