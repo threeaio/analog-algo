@@ -1,56 +1,17 @@
 import type { HeadFC, PageProps } from "gatsby"
 import { SceneManager } from "@/canvas/core/scene-manager"
-import { PolygonWalker } from "@/canvas/shapes/polygon-walker"
-import { PatternConfig } from "@/canvas/shapes/base-shape"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import * as React from "react"
+import { shapes } from "@/config/shapes"
 
 const Page01: React.FC<PageProps> = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const sceneRef = React.useRef<SceneManager | null>(null)
   const [animationSpeed, setAnimationSpeed] = React.useState(200)
   const [activeShapes, setActiveShapes] = React.useState<Record<string, string>>({})
-
-  const basePattern: PatternConfig = {
-    stripeOrientation: 'vertical',
-    stripeColor: '#c13',
-    stripeDivisions: 16,
-  }
-
-  const shapes = {
-    triangle: {
-      create: () => PolygonWalker.createTriangle(sceneRef.current!.getContext(), {
-        pattern: { ...basePattern },
-        animationDuration: animationSpeed,
-        pauseDuration: 0,
-        easing: 'linear'
-      }),
-      label: 'Triangle'
-    },
-    rectangle: {
-      create: () => PolygonWalker.createRectangle(sceneRef.current!.getContext(), {
-        pattern: { ...basePattern, patternOffset: true },
-        offset: 4,
-        animationDuration: animationSpeed,
-        pauseDuration: 200,
-        easing: 'easeOut'
-      }),
-      label: 'Rectangle'
-    },
-    pentagon: {
-      create: () => PolygonWalker.createRegularPolygon(sceneRef.current!.getContext(), 7, {
-        pattern: { ...basePattern, patternOffset: true },
-        offset: 9,
-        animationDuration: animationSpeed,
-        pauseDuration: 400,
-        easing: 'easeIn'
-      }),
-      label: 'Pentagon'
-    }
-  }
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
@@ -79,7 +40,7 @@ const Page01: React.FC<PageProps> = () => {
       });
     } else {
       // Add shape
-      const shape = shapes[shapeKey as keyof typeof shapes].create();
+      const shape = shapes[shapeKey].create(sceneRef.current!.getContext(), animationSpeed);
       const id = sceneRef.current?.addShape(shape);
       if (id) {
         setActiveShapes(prev => ({
