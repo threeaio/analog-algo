@@ -1,4 +1,4 @@
-import { BaseShape, Point, PatternConfig } from './base-shape';
+import { BaseShape, Point, PatternConfig, EasingType } from './base-shape';
 import { GridSystem, GridConfig } from '../grid/grid-system';
 
 interface TriangleConfig {
@@ -6,14 +6,19 @@ interface TriangleConfig {
   color?: string;
   offset?: number;
   pattern?: PatternConfig;
+  easing?: EasingType;
+  pauseDuration?: number;
+  animationDuration?: number;
 }
 
 export class TriangleWalker extends BaseShape {
   private vertices: Point[];
   private targetVertices: Point[];
+  private startVertices: Point[] | null = null;
   private isAnimating: boolean;
   private gridPoints: Point[];
-  private animationSpeed: number;
+  private animationProgress: number = 0;
+  private animationDuration: number;
   private pauseDuration: number;
   private lastPauseTime: number;
   private config: TriangleConfig;
@@ -36,8 +41,8 @@ export class TriangleWalker extends BaseShape {
     
     this.targetVertices = [];
     this.isAnimating = false;
-    this.animationSpeed = 0.1;
-    this.pauseDuration = 0.1;
+    this.animationDuration = config?.animationDuration ?? 300; // default 1 second
+    this.pauseDuration = config?.pauseDuration ?? 300;
     this.lastPauseTime = 0;
   }
 
@@ -62,32 +67,45 @@ export class TriangleWalker extends BaseShape {
       return;
     }
 
-    let allArrived = true;
+    // Update animation progress
+    this.animationProgress += (deltaTime / this.animationDuration);
     
-    this.vertices = this.vertices.map((vertex, i) => {
-      const target = this.targetVertices[i];
-      const dx = target.x - vertex.x;
-      const dy = target.y - vertex.y;
-      
-      if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
-        allArrived = false;
-        return {
-          x: vertex.x + dx * this.animationSpeed,
-          y: vertex.y + dy * this.animationSpeed
-        };
-      }
-      return target;
-    });
+    if (this.animationProgress >= 1) {
+      // Complete the animation exactly at 1
+      const easedProgress = this.ease(1, this.config.easing);
+      this.vertices = this.vertices.map((vertex, i) => {
+        const start = this.startVertices![i];
+        const target = this.targetVertices[i];
+        return this.lerpPoint(start, target, easedProgress);
+      });
 
-    if (allArrived) {
+      // Reset animation state
+      this.animationProgress = 0;
       this.isAnimating = false;
       this.lastPauseTime = performance.now();
+      this.startVertices = null;
+      return;
     }
+
+    // Apply easing to the progress
+    const easedProgress = this.ease(this.animationProgress, this.config.easing);
+    
+    // Update vertices positions
+    this.vertices = this.vertices.map((vertex, i) => {
+      const start = this.startVertices![i];
+      const target = this.targetVertices[i];
+      
+      return this.lerpPoint(start, target, easedProgress);
+    });
   }
 
   private moveToNextPoints(): void {
     if (this.isAnimating) return;
     
+    // Store start positions
+    this.startVertices = [...this.vertices];
+    
+    // Calculate target positions
     this.targetVertices = this.vertices.map((vertex) => {
       const currentIndex = this.gridPoints.findIndex(p => 
         p.x === vertex.x && p.y === vertex.y
@@ -97,5 +115,6 @@ export class TriangleWalker extends BaseShape {
     });
     
     this.isAnimating = true;
+    this.animationProgress = 0;
   }
 } 

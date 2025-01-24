@@ -3,6 +3,8 @@ export interface Point {
   y: number;
 }
 
+export type EasingType = 'linear' | 'easeIn' | 'easeOut';
+
 export interface PatternConfig {
   stripeOrientation: 'vertical' | 'horizontal';
   stripeColor: string;
@@ -33,11 +35,24 @@ export abstract class BaseShape {
     };
   }
 
+  protected ease(t: number, type: EasingType = 'linear'): number {
+    switch (type) {
+      case 'easeIn':
+        return t * t; // Quadratic ease in
+      case 'easeOut':
+        return t * (2 - t); // Quadratic ease out
+      case 'linear':
+      default:
+        return t;
+    }
+  }
+
   protected createStripePattern(cellSize: number): CanvasPattern | null {
     if (!this.pattern) return null;
 
     const { stripeOrientation, stripeColor, stripeDivisions, patternOffset } = this.pattern;
     const stripeSize = cellSize / stripeDivisions;
+    const stripeThickness = stripeSize * 1.2; // Make stripes a bit thicker
     
     // Create a pattern canvas
     const patternCanvas = document.createElement('canvas');
@@ -59,11 +74,11 @@ export abstract class BaseShape {
     
     if (stripeOrientation === 'vertical') {
       for (let x = offset; x < size; x += stripeSize * 2) {
-        patternCtx.fillRect(x, 0, stripeSize, size);
+        patternCtx.fillRect(x, 0, stripeThickness, size);
       }
     } else {
       for (let y = offset; y < size; y += stripeSize * 2) {
-        patternCtx.fillRect(0, y, size, stripeSize);
+        patternCtx.fillRect(0, y, size, stripeThickness);
       }
     }
 

@@ -19,15 +19,22 @@ const Page01: React.FC<PageProps> = () => {
     const basePattern: PatternConfig = {
       stripeOrientation: 'vertical',
       stripeColor: '#c13',
-      stripeDivisions: 8,
+      stripeDivisions: 16,
     }
     // Add triangle walker
     const triangle = new TriangleWalker(scene.getContext(),{
+      pauseDuration: 0,
+      animationDuration: 200,
+      easing: 'linear',
       pattern: {
        ...basePattern
       }
     });
-    const triangle2 = new TriangleWalker(scene.getContext(), {offset: 4,  pattern: {
+    const triangle2 = new TriangleWalker(scene.getContext(), {offset: 4,
+      pauseDuration: 200,
+      animationDuration: 800,
+      easing: 'easeOut',
+        pattern: {
       ...basePattern,
       patternOffset: true
     }});
