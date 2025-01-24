@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.5rem
+    --color-3a-green: 150 86.5% 59.4%;
+    --color-3a-red: 346 100% 69.8%;
+    --color-3a-red-aggressive: 355 100% 64.8%;
+    --color-3a-red: 344.1 88.3% 46.9%;
+    --color-3a-blue: 216.9 94.3% 41.6%;
+    --color-3a-white: 8 23.1% 72%;
+    --color-3a-paper: 184.3 5.6% 50.6%;
+    --color-3a-gray: 220 20% 25%;
+    --color-3a-gray-darker: 231 20% 15%;
+    --color-3a-gray-darkest: 231 16% 9%;
+    --color-3a-black: 240 19% 5%;
+  }
+}
+
+body {
+  background-color: hsl(var(--color-3a-gray-darkest));
+  color: hsl(var(--color-3a-white));
+}
+
+canvas {
+  image-rendering: pixelated;
+}
