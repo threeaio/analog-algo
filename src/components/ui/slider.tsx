@@ -3,6 +3,7 @@ import * as SliderPrimitive from "@radix-ui/react-slider"
 
 import { cn } from "@/lib/utils"
 
+
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
@@ -15,10 +16,11 @@ const Slider = React.forwardRef<
     )}
     {...props}
   >
-    <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
-      <SliderPrimitive.Range className="absolute h-full bg-neutral-900 dark:bg-neutral-50" />
+  
+    <SliderPrimitive.Track className="relative h-px w-full grow overflow-hidden bg-3a-gray-darker">
+      <SliderPrimitive.Range className="absolute h-full bg-3a-white" />
     </SliderPrimitive.Track>
-    <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-neutral-900 bg-white ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:border-neutral-50 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:focus-visible:ring-neutral-300" />
+    <SliderPrimitive.Thumb className="block w-px h-5 cursor-ew-resize transition-colors relative after:content-[''] after:absolute after:top-0 after:bottom-0 after:left-1/2 after:w-px after:bg-3a-white before:content-[''] before:absolute before:bottom-0 before:left-[-1rem] before:top-1/2 before:-translate-y-1/2 before:h-[2rem] before:rounded-full   before:w-[2rem] before:bg-transparent hover:before:bg-3a-white/10 before:transition-all before:duration-300"  />
   </SliderPrimitive.Root>
 ))
 Slider.displayName = SliderPrimitive.Root.displayName

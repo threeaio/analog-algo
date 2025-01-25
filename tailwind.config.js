@@ -16,6 +16,7 @@ module.exports = {
         '3a-black': 'hsl(var(--color-3a-black))',
         '3a-paper': 'hsl(var(--color-3a-paper))',
         '3a-red': 'hsl(var(--color-3a-red))',
+        '3a-red-dark': 'hsl(var(--color-3a-red-dark))',
         '3a-blue': 'hsl(var(--color-3a-blue))',
         '3a-green': 'hsl(var(--color-3a-green))',
         '3a-gray-darkest': 'hsl(var(--color-3a-gray-darkest))',

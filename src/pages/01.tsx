@@ -123,7 +123,7 @@ const Page01: React.FC<PageProps> = () => {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">Active Shapes</h2>
             {activeShapes.map(shape => (
-              <div key={shape.id} className="border rounded-lg p-4 space-y-4">
+              <div key={shape.id} className="py-4 space-y-4">
                 <div className="flex justify-between items-center">
                   <h3 className="font-medium">{shapes[shape.type].label}</h3>
                   <Button 
