@@ -112,7 +112,6 @@ const Page01: React.FC<PageProps> = () => {
               <Button 
                 onClick={handleAddShape} 
                 disabled={!selectedShape}
-                size="icon"
               >
                 <Plus className="h-4 w-4" />
               </Button>
@@ -128,7 +127,6 @@ const Page01: React.FC<PageProps> = () => {
                   <h3 className="font-medium">{shapes[shape.type].label}</h3>
                   <Button 
                     variant="ghost" 
-                    size="icon"
                     onClick={() => handleRemoveShape(shape.id)}
                   >
                     <X className="h-4 w-4" />
