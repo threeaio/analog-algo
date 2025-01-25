@@ -4,7 +4,7 @@ import { PolygonWalker } from "@/canvas/shapes/polygon-walker";
 export const basePattern: PatternConfig = {
   stripeOrientation: 'vertical',
   stripeColor: '#c13',
-  stripeDivisions: 16,
+  stripeDivisions: 24,
 };
 
 export interface ShapeConfig {

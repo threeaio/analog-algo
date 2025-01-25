@@ -55,6 +55,20 @@ export class SceneManager {
     }
   }
 
+  public updateShapeOffset(id: string, offset: number): void {
+    const shape = this.shapes.get(id);
+    if (shape instanceof PolygonWalker) {
+      shape.setOffset(offset);
+    }
+  }
+
+  public updateShapePatternOffset(id: string, offset: boolean): void {
+    const shape = this.shapes.get(id);
+    if (shape instanceof PolygonWalker) {
+      shape.setPatternOffset(offset);
+    }
+  }
+
   public start() {
     if (this.animationFrameId === null) {
       this.lastFrameTime = performance.now();

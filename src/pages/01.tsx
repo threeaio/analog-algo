@@ -7,11 +7,14 @@ import { Button } from "@/components/ui/button"
 import { X, Plus } from "lucide-react"
 import * as React from "react"
 import { shapes } from "@/config/shapes"
+import { Switch } from "@/components/ui/switch"
 
 interface ActiveShape {
   id: string;
   type: string;
   speed: number;
+  offset: number;
+  patternOffset: boolean;
 }
 
 const Page01: React.FC<PageProps> = () => {
@@ -51,7 +54,9 @@ const Page01: React.FC<PageProps> = () => {
     setActiveShapes(prev => [...prev, {
       id,
       type: selectedShape,
-      speed: defaultSpeed
+      speed: defaultSpeed,
+      offset: 0,
+      patternOffset: false
     }]);
 
     // Reset selection
@@ -68,6 +73,20 @@ const Page01: React.FC<PageProps> = () => {
       shape.id === shapeId ? { ...shape, speed: newSpeed } : shape
     ));
     sceneRef.current?.updateShapeSpeed(shapeId, newSpeed);
+  };
+
+  const handleOffsetChange = (shapeId: string, newOffset: number) => {
+    setActiveShapes(prev => prev.map(shape => 
+      shape.id === shapeId ? { ...shape, offset: newOffset } : shape
+    ));
+    sceneRef.current?.updateShapeOffset(shapeId, newOffset);
+  };
+
+  const handlePatternOffsetChange = (shapeId: string, newOffset: boolean) => {
+    setActiveShapes(prev => prev.map(shape => 
+      shape.id === shapeId ? { ...shape, patternOffset: newOffset } : shape
+    ));
+    sceneRef.current?.updateShapePatternOffset(shapeId, newOffset);
   };
 
   return (
@@ -115,20 +134,50 @@ const Page01: React.FC<PageProps> = () => {
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label>Speed</Label>
-                  <div className="flex gap-4 items-center">
-                    <Slider
-                      value={[shape.speed]}
-                      onValueChange={([value]) => handleSpeedChange(shape.id, value)}
-                      min={100}
-                      max={1000}
-                      step={100}
-                      className="w-[60%]"
+                <div className="space-y-4">
+                  {/* Speed Control */}
+                  <div className="space-y-2">
+                    <Label>Speed</Label>
+                    <div className="flex gap-4 items-center">
+                      <Slider
+                        value={[shape.speed]}
+                        onValueChange={([value]) => handleSpeedChange(shape.id, value)}
+                        min={100}
+                        max={1000}
+                        step={100}
+                        className="w-[60%]"
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        {shape.speed}ms
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Position Offset Control */}
+                  <div className="space-y-2">
+                    <Label>Position Offset</Label>
+                    <div className="flex gap-4 items-center">
+                      <Slider
+                        value={[shape.offset]}
+                        onValueChange={([value]) => handleOffsetChange(shape.id, value)}
+                        min={0}
+                        max={32}
+                        step={1}
+                        className="w-[60%]"
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        {shape.offset} steps
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Pattern Offset Toggle */}
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={shape.patternOffset}
+                      onCheckedChange={(checked) => handlePatternOffsetChange(shape.id, checked)}
                     />
-                    <span className="text-sm text-muted-foreground">
-                      {shape.speed}ms
-                    </span>
+                    <Label>Pattern Offset</Label>
                   </div>
                 </div>
               </div>

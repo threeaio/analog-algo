@@ -27,12 +27,14 @@ export class PolygonWalker extends BaseShape {
   private lastPauseTime: number;
   private config: PolygonConfig;
   private grid: GridSystem;
+  private initialIndices: VertexIndex[];
 
   constructor(ctx: CanvasRenderingContext2D, initialIndices: VertexIndex[], config?: PolygonConfig) {
     super(ctx, config?.pattern);
     this.config = config ?? {};
     this.grid = new GridSystem(ctx, config?.gridConfig);
     this.gridPoints = this.grid.getPerimeterPoints();
+    this.initialIndices = initialIndices;
     
     // Apply offset to initial vertices if specified
     const offset = this.config.offset ?? 0;
@@ -115,6 +117,36 @@ export class PolygonWalker extends BaseShape {
 
   public setAnimationDuration(duration: number): void {
     this.animationDuration = duration;
+  }
+
+  public setOffset(offset: number): void {
+    this.config.offset = offset;
+    
+    // Vertices basierend auf den initialIndices verschieben
+    this.vertices = this.initialIndices.map(({ index }) => {
+        const pointIndex = (index + offset) % this.gridPoints.length;
+        return this.gridPoints[pointIndex];
+    });
+
+    // Wenn eine Animation läuft, auch Start- und Zielpunkte entsprechend verschieben
+    if (this.isAnimating && this.startVertices && this.targetVertices) {
+        this.startVertices = this.initialIndices.map(({ index }) => {
+            const pointIndex = (index + offset) % this.gridPoints.length;
+            return this.gridPoints[pointIndex];
+        });
+        
+        // Für targetVertices müssen wir den nächsten Punkt berechnen
+        this.targetVertices = this.initialIndices.map(({ index }) => {
+            const pointIndex = (index + offset + 1) % this.gridPoints.length;
+            return this.gridPoints[pointIndex];
+        });
+    }
+  }
+
+  public setPatternOffset(offset: boolean): void {
+    if (this.pattern) {
+      this.pattern.patternOffset = offset;
+    }
   }
 
   public update(deltaTime: number): void {
