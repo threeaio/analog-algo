@@ -135,7 +135,7 @@ const Page01: React.FC<PageProps> = () => {
                 <div className="space-y-4">
                   {/* Speed Control */}
                   <div className="space-y-2">
-                    <Label>Speed</Label>
+                    <Label>Animation Duration</Label>
                     <div className="flex gap-4 items-center">
                       <Slider
                         value={[shape.speed]}
@@ -170,12 +170,12 @@ const Page01: React.FC<PageProps> = () => {
                   </div>
 
                   {/* Pattern Offset Toggle */}
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 cursor-pointer">
                     <Switch
                       checked={shape.patternOffset}
                       onCheckedChange={(checked) => handlePatternOffsetChange(shape.id, checked)}
                     />
-                    <Label>Pattern Offset</Label>
+                    <Label className={`${shape.patternOffset ? "text-3a-white" : "text-3a-paper"} cursor-pointer`} onClick={() => handlePatternOffsetChange(shape.id, !shape.patternOffset)}>Pattern Offset</Label>
                   </div>
                 </div>
               </div>
