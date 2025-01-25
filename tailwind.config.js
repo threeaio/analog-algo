@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
@@ -7,6 +9,11 @@ module.exports = {
   ],
   theme: {
   	extend: {
+      fontFamily: {
+        sans: ['"Hoves-Mono"', ...defaultTheme.fontFamily.sans],
+        display: ['"Hoves"', ...defaultTheme.fontFamily.sans],
+        mono: ['"Hoves-Mono"', ...defaultTheme.fontFamily.sans],
+      },
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',

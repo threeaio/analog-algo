@@ -4,6 +4,12 @@
 
 @layer base {
   :root {
+    font-variant-numeric: slashed-zero tabular-nums;
+    font-variant-ligatures: common-ligatures
+      discretionary-ligatures contextual;
+    font-variant-alternates: stylistic(alternates);
+    font-feature-settings: "ss01", "ss02", "ss04";
+
     --radius: 0.5rem;
     --color-3a-green: 150 86.5% 59.4%;
     --color-3a-red: 346 100% 69.8%;
@@ -22,4 +28,76 @@
 body {
   background-color: hsl(var(--color-3a-gray-darkest));
   color: hsl(var(--color-3a-white));
+  font-variant-numeric: slashed-zero tabular-nums;
+  font-variant-ligatures: common-ligatures
+    discretionary-ligatures contextual;
+  font-variant-alternates: stylistic(alternates);
+  font-feature-settings: "ss01", "ss02", "ss04";
+}
+
+@font-face {
+  font-family: "Hoves";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url("/fonts/TT_Hoves_Pro_Regular.woff2")
+    format("woff2");
+}
+@font-face {
+  font-family: "Hoves";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 500;
+  src: url("/fonts/TT_Hoves_Pro_Italic.woff2")
+    format("woff2");
+}
+
+@font-face {
+  font-family: "Hoves";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200;
+  src: url("/fonts/TT_Hoves_Pro_Thin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Hoves";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 200;
+  src: url("/fonts/TT_Hoves_Pro_Thin_Italic.woff2")
+    format("woff2");
+}
+
+@font-face {
+  font-family: "Hoves";
+  font-style: normal;
+  font-display: swap;
+  font-weight: bold;
+  src: url("/fonts/TT_Hoves_Pro_DemiBold.woff2")
+    format("woff2");
+}
+@font-face {
+  font-family: "Hoves";
+  font-style: italic;
+  font-display: swap;
+  font-weight: bold;
+  src: url("/fonts/TT_Hoves_Pro_DemiBold_Italic.woff2")
+    format("woff2");
+}
+
+@font-face {
+  font-family: "Hoves-Mono";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url("/fonts/TT_Hoves_Pro_Mono_Regular.woff2")
+    format("woff2");
+}
+@font-face {
+  font-family: "Hoves-Mono";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 500;
+  src: url("/fonts/TT_Hoves_Pro_Mono_Italic.woff2")
+    format("woff2");
 }
