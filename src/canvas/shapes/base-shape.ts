@@ -1,3 +1,5 @@
+import { Dimensions } from "@/canvas/core/dimension-provider";
+
 export interface Point {
   x: number;
   y: number;
@@ -15,6 +17,7 @@ export interface PatternConfig {
 export abstract class BaseShape {
   protected ctx: CanvasRenderingContext2D;
   protected pattern: PatternConfig | undefined;
+  
 
   constructor(ctx: CanvasRenderingContext2D, pattern?: PatternConfig) {
     this.ctx = ctx;
@@ -23,6 +26,7 @@ export abstract class BaseShape {
 
   abstract draw(): void;
   abstract update(deltaTime: number): void;
+  abstract updateDimensions(dimensions: Dimensions): void;
 
   protected lerp(start: number, end: number, t: number): number {
     return start + (end - start) * t;

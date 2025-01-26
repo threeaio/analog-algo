@@ -1,3 +1,4 @@
+import { DimensionProvider } from '@/canvas/core/dimension-provider';
 import { Point } from '../shapes/base-shape';
 
 export interface GridConfig {
@@ -13,14 +14,20 @@ export class GridSystem {
   private tickHeight: number;
   private width: number;
   private height: number;
-
-  constructor(ctx: CanvasRenderingContext2D, config?: GridConfig) {
+  private dimensionProvider: DimensionProvider;
+  constructor(ctx: CanvasRenderingContext2D, dimensionProvider: DimensionProvider, config?: GridConfig) {
     this.ctx = ctx;
+    this.dimensionProvider = dimensionProvider;
     this.numRows = config?.numRows ?? 8;
     this.numCols = config?.numCols ?? 8;
     this.tickHeight = config?.tickHeight ?? 7;
-    this.width = ctx.canvas.width / window.devicePixelRatio;
-    this.height = ctx.canvas.height / window.devicePixelRatio;
+    this.width = dimensionProvider.getDimensions().width;
+    this.height = dimensionProvider.getDimensions().height;
+
+    this.dimensionProvider.subscribe((dimensions) => {
+      this.width = dimensions.width;
+      this.height = dimensions.height;
+    });
   }
 
   public getCellSize(): number {
@@ -28,6 +35,7 @@ export class GridSystem {
   }
 
   public draw() {
+    
     const rowHeight = this.height / this.numRows;
     const colWidth = this.width / this.numCols;
 

@@ -8,6 +8,8 @@ import { X, Plus } from "lucide-react"
 import * as React from "react"
 import { shapes } from "@/config/shapes"
 import { Switch } from "@/components/ui/switch"
+import { CanvasDimensionProvider, DimensionProvider, ElementDimensionProvider } from "@/canvas/core/dimension-provider"
+import { GridSystem } from "@/canvas/grid/grid-system"
 
 interface ActiveShape {
   id: string;
@@ -22,32 +24,70 @@ const Page01: React.FC<PageProps> = () => {
   const sceneRef = React.useRef<SceneManager | null>(null)
   const [activeShapes, setActiveShapes] = React.useState<ActiveShape[]>([])
   const [selectedShape, setSelectedShape] = React.useState<string>("")
+  const [grid, setGrid] = React.useState<GridSystem | undefined>(undefined);
+  const [dimensionProvider, setDimensionProvider] = React.useState<DimensionProvider | undefined>(undefined);
 
+  // Initialize dimension provider
   React.useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Initialize scene
-    const scene = new SceneManager(canvas);
-    sceneRef.current = scene;
+    const provider = new CanvasDimensionProvider(canvas);
     
-    // Start animation loop
+    const unsubscribe = provider.subscribe((dimensions) => {
+      activeShapes.forEach(shape => {
+        const shapeInstance = sceneRef.current?.shapes.get(shape.id);
+        if (shapeInstance) {
+          shapeInstance.updateDimensions(dimensions);
+        }
+      });
+    });
+    setDimensionProvider(provider);
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  // Initialize grid after dimension provider is set
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !dimensionProvider) return;
+
+    const newGrid = new GridSystem(canvas.getContext('2d')!, dimensionProvider);
+    setGrid(newGrid);
+
+  }, [dimensionProvider]);
+
+  // Initialize scene after both grid and dimension provider are set
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !dimensionProvider || !grid) return;
+
+    const scene = new SceneManager(canvas, dimensionProvider);
+    sceneRef.current = scene;
     scene.start();
+
+    const unsubscribe = dimensionProvider.subscribe((dimensions) => {
+      scene.updateCanvasSize(dimensions);
+    });
 
     return () => {
       scene.stop();
+      unsubscribe();
     };
-  }, []);
+  }, [dimensionProvider, grid]);
 
   const handleShapeSelect = (value: string) => {
     setSelectedShape(value);
   };
 
   const handleAddShape = () => {
-    if (!sceneRef.current || !selectedShape) return;
+    console.log('grid', grid);
+    console.log('dimensionProvider', dimensionProvider);
+    if (!sceneRef.current || !selectedShape || !grid) return;
     
     const defaultSpeed = 600;
-    const shape = shapes[selectedShape].create(sceneRef.current.getContext());
+    const shape = shapes[selectedShape].create(sceneRef.current.getContext(), grid);
     const id = sceneRef.current.addShape(shape);
     shape.setAnimationDuration(defaultSpeed);
     
@@ -185,11 +225,10 @@ const Page01: React.FC<PageProps> = () => {
             )}
           </div>
         </div>
-
         <canvas
-          className="w-full aspect-square bg-background"
-          ref={canvasRef}
-        />
+                    className=" w-full aspect-square bg-background"
+                    ref={canvasRef}
+                  />
       </main>
     </div>
   )

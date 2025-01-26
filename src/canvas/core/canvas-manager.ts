@@ -1,5 +1,7 @@
+import { Dimensions } from "@/canvas/core/dimension-provider";
+
 export class CanvasManager {
-  private canvas: HTMLCanvasElement;
+  public canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private pixelRatio: number;
 
@@ -16,6 +18,12 @@ export class CanvasManager {
     const rect = this.canvas.getBoundingClientRect();
     this.canvas.width = rect.width * this.pixelRatio;
     this.canvas.height = rect.height * this.pixelRatio;
+    this.ctx.scale(this.pixelRatio, this.pixelRatio);
+  }
+
+  public updateCanvasSize(dimensions: Dimensions): void {
+    this.canvas.width = dimensions.width * this.pixelRatio;
+    this.canvas.height = dimensions.height * this.pixelRatio  ;
     this.ctx.scale(this.pixelRatio, this.pixelRatio);
   }
 

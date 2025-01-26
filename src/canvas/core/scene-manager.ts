@@ -2,23 +2,30 @@ import { BaseShape } from '../shapes/base-shape';
 import { GridSystem, GridConfig } from '../grid/grid-system';
 import { CanvasManager } from './canvas-manager';
 import { PolygonWalker } from '../shapes/polygon-walker';
-
+import { DimensionProvider, Dimensions } from '@/canvas/core/dimension-provider';
 export class SceneManager {
   private canvasManager: CanvasManager;
-  private shapes: Map<string, BaseShape> = new Map();
+  public shapes: Map<string, BaseShape> = new Map();
   private grid: GridSystem;
   private animationFrameId: number | null = null;
   private lastFrameTime: number = 0;
   private ctx: CanvasRenderingContext2D;
 
-  constructor(private canvas: HTMLCanvasElement, gridConfig?: GridConfig) {
+  constructor(private canvas: HTMLCanvasElement, dimensionProvider: DimensionProvider, gridConfig?: GridConfig) {
     this.canvasManager = new CanvasManager(canvas);
-    this.grid = new GridSystem(this.canvasManager.getContext(), gridConfig);
+    this.grid = new GridSystem(this.canvasManager.getContext(), dimensionProvider,gridConfig);
     this.ctx = canvas.getContext('2d')!;
   }
 
   private generateId(): string {
     return Math.random().toString(36).substring(2, 9);
+  }
+
+  public updateCanvasSize(dimensions: Dimensions): void {
+    this.canvasManager.updateCanvasSize(dimensions);
+    this.shapes.forEach((shape) => {
+      shape.updateDimensions(dimensions);
+    });
   }
 
   public getContext(): CanvasRenderingContext2D {
