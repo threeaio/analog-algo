@@ -267,9 +267,16 @@ const Page01: React.FC<PageProps> = () => {
           {/* Active Shapes List */}
           <div className="space-y-4">
             {activeShapes.map(shape => (
-              <div key={shape.id} className="grid grid-cols-2 gap-4 space-y-4 group">
-                <div className="flex justify-start items-center gap-2">
+              <div key={shape.id} className="grid grid-cols-2 gap-4  group">
+                <div className="flex justify-start items-start gap-4">
                   <h3 className="uppercase font-display tracking-widest">{shapes[shape.type].label}</h3>
+                  <div className="text-muted-foreground text-xs opacity-20 group-hover:opacity-100 transition-opacity duration-300">
+                    Speed: {shape.speed}ms<br />
+                    Pause: {shape.pauseDuration}ms<br />
+                    Easing: {shape.easing}<br />
+                    Offset: {shape.offset} steps<br />
+                    Pattern Offset: {shape.patternOffset ? "Yes" : "No"}
+                  </div>
                 </div>
                 <div className="flex flex-col opacity-20 group-hover:opacity-100 transition-opacity duration-300">
                   <Sheet>
