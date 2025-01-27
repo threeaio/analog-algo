@@ -24,6 +24,13 @@ interface ActiveShape {
   easing: string;
 }
 
+interface OpenPanels {
+  [shapeId: string]: {
+    animation?: boolean;
+    pattern?: boolean;
+  };
+}
+
 const Page01: React.FC<PageProps> = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const svgRef = React.useRef<SVGSVGElement>(null)
@@ -37,6 +44,7 @@ const Page01: React.FC<PageProps> = () => {
     numCols: 8,
     tickHeight: 4
   });
+  const [openPanels, setOpenPanels] = React.useState<OpenPanels>({});
 
   // Initialize everything
   React.useEffect(() => {
@@ -158,13 +166,23 @@ const Page01: React.FC<PageProps> = () => {
     gridSystemRef.current?.setConfig(newConfig);
   };
 
+  const handleSheetOpenChange = (shapeId: string, panel: 'animation' | 'pattern', isOpen: boolean) => {
+    setOpenPanels(prev => ({
+      ...prev,
+      [shapeId]: {
+        ...prev[shapeId],
+        [panel]: isOpen
+      }
+    }));
+  };
+
   return (
     <div className="p-8 dark uppercase text-xs">
       <main className="grid grid-cols-2 gap-8 h-full">
         
         <div className="space-y-6">
           {/* Shape Selector */}
-          <div className="space-y-2">
+          <div className="space-y-12">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 Grid-Seeting:<br />
@@ -267,19 +285,23 @@ const Page01: React.FC<PageProps> = () => {
           {/* Active Shapes List */}
           <div className="space-y-4">
             {activeShapes.map(shape => (
-              <div key={shape.id} className="grid grid-cols-2 gap-4  group">
+              <div key={shape.id} className="grid grid-cols-2 gap-4 group">
                 <div className="flex justify-start items-start gap-4">
                   <h3 className="uppercase font-display tracking-widest">{shapes[shape.type].label}</h3>
-                  <div className="text-muted-foreground text-xs opacity-20 group-hover:opacity-100 transition-opacity duration-300">
-                    Speed: {shape.speed}ms<br />
-                    Pause: {shape.pauseDuration}ms<br />
-                    Easing: {shape.easing}<br />
-                    Offset: {shape.offset} steps<br />
-                    Pattern Offset: {shape.patternOffset ? "Yes" : "No"}
+                  <div className="text-muted-foreground text-xs space-y-0.5">
+                    <div className={`transition-opacity duration-300 ${openPanels[shape.id]?.animation ? 'opacity-100' : 'opacity-20 group-hover:opacity-100'}`}>
+                      Speed: {shape.speed}ms<br />
+                      Pause: {shape.pauseDuration}ms<br />
+                      Easing: {shape.easing}
+                    </div>
+                    <div className={`transition-opacity duration-300 ${openPanels[shape.id]?.pattern ? 'opacity-100' : 'opacity-20 group-hover:opacity-100'}`}>
+                      Offset: {shape.offset} steps<br />
+                      Pattern Offset: {shape.patternOffset ? "Yes" : "No"}
+                    </div>
                   </div>
                 </div>
                 <div className="flex flex-col opacity-20 group-hover:opacity-100 transition-opacity duration-300">
-                  <Sheet>
+                  <Sheet onOpenChange={(isOpen) => handleSheetOpenChange(shape.id, 'animation', isOpen)}>
                     <SheetTrigger asChild className="self-start">
                       <Button variant="ghost" size="sm">[Animation Controls]</Button>
                     </SheetTrigger>
@@ -337,7 +359,7 @@ const Page01: React.FC<PageProps> = () => {
                     </SheetContent>
                   </Sheet>
 
-                  <Sheet>
+                  <Sheet onOpenChange={(isOpen) => handleSheetOpenChange(shape.id, 'pattern', isOpen)}>
                     <SheetTrigger asChild className="self-start">
                       <Button variant="ghost" size="sm">[Pattern Controls]</Button>
                     </SheetTrigger>
