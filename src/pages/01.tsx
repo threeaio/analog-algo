@@ -105,7 +105,7 @@ const Page01: React.FC<PageProps> = () => {
     }]);
 
     // Reset selection
-    setSelectedShape("");
+    // setSelectedShape("");
   };
 
   const handleRemoveShape = (shapeId: string) => {
@@ -135,7 +135,7 @@ const Page01: React.FC<PageProps> = () => {
   };
 
   return (
-    <div className="p-8 dark">
+    <div className="p-8 dark uppercase">
       <main className="grid grid-cols-2 gap-8 h-full">
         <div className="space-y-6">
           {/* Shape Selector */}
@@ -167,9 +167,10 @@ const Page01: React.FC<PageProps> = () => {
           <div className="space-y-4">
             {activeShapes.map(shape => (
               <div key={shape.id} className="py-4 space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-medium">{shapes[shape.type].label}</h3>
+                <div className="flex justify-start items-center gap-2">
+                  <h3 className="uppercase font-display tracking-widest">{shapes[shape.type].label}</h3>
                   <Button 
+                    className="relative top-.5"
                     variant="ghost" 
                     onClick={() => handleRemoveShape(shape.id)}
                   >
