@@ -10,9 +10,9 @@ import { shapes } from "@/config/shapes"
 import { Switch } from "@/components/ui/switch"
 import { CanvasDimensionProvider, DimensionProvider, ElementDimensionProvider } from "@/canvas/core/dimension-provider"
 import { GridSystem } from "@/canvas/grid/grid-system"
-import { GridRendererCanvas } from "@/canvas/grid/grid-renderer"
 import { GridRendererSvg } from "@/canvas/grid/grid-renderer-svg"
 import { EasingType } from "@/canvas/shapes/base-shape"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 interface ActiveShape {
   id: string;
@@ -175,7 +175,7 @@ const Page01: React.FC<PageProps> = () => {
             </div>
           </div>
 
-          {/* Active Shapes Controls */}
+          {/* Active Shapes List */}
           <div className="space-y-4">
             {activeShapes.map(shape => (
               <div key={shape.id} className="py-4 space-y-4">
@@ -186,89 +186,109 @@ const Page01: React.FC<PageProps> = () => {
                     variant="ghost"
                     onClick={() => handleRemoveShape(shape.id)}
                   >
-                    {/* <X className="h-4 w-4" /> */}
                     [remove]
                   </Button>
                 </div>
-                <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
-                   {/* Speed Control */}
-                  <div className="space-y-2">
-                    <Label className="truncate text-xs">Animation Duration</Label>
-                    <div className="flex gap-4 items-center">
-                      <Slider
-                        value={[shape.speed]}
-                        onValueChange={([value]) => handleSpeedChange(shape.id, value)}
-                        min={0}
-                        max={1000}
-                        step={100}
-                        className="w-[60%]"
-                      />
-                      <span className="text-muted-foreground">
-                        {shape.speed}ms
-                      </span>
-                    </div>
-                  </div>
-                  {/* Pause Duration Control */}
-                  <div className="space-y-2">
-                    <Label className="truncate text-xs">Pause Duration</Label>
-                    <div className="flex gap-4 items-center">
-                      <Slider
-                        value={[shape.pauseDuration]}
-                        onValueChange={([value]) => handlePauseDurationChange(shape.id, value)}
-                        min={0}
-                        max={1000}
-                        step={100}
-                        className="w-[60%]"
-                      />
-                      <span className="text-muted-foreground">
-                        {shape.pauseDuration}ms
-                      </span>
-                    </div>
-                  </div>
-                    {/* Easing Control */}
-                  <div className="space-y-2">
-                    <Label className="truncate text-xs">Easing</Label>
-                    <Select value={shape.easing} onValueChange={(value) => handleEasingChange(shape.id, value as EasingType)}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select easing" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="linear">Linear</SelectItem>
-                        <SelectItem value="easeIn">Ease In</SelectItem>
-                        <SelectItem value="easeOut">Ease Out</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                    {/* Position Offset Control */}
-                  <div className="space-y-2">
-                    <Label className="truncate text-xs">Position Offset</Label>
-                    <div className="flex gap-4 items-center">
-                      <Slider
-                        value={[shape.offset]}
-                        onValueChange={([value]) => handleOffsetChange(shape.id, value)}
-                        min={0}
-                        max={32}
-                        step={1}
-                        className="w-[60%]"
-                      />
-                      <span className="text-muted-foreground">
-                        {shape.offset} steps
-                      </span>
-                    </div>
-                  </div>
-                   {/* Pattern Offset Toggle */}
-                  <div className="flex items-center space-x-2 cursor-pointer">
-                    <Switch
-                      checked={shape.patternOffset}
-                      onCheckedChange={(checked) => handlePatternOffsetChange(shape.id, checked)}
-                    />
-                    <Label className={`text-xs truncate ${shape.patternOffset ? "text-3a-white" : "text-3a-paper"} cursor-pointer`} onClick={() => handlePatternOffsetChange(shape.id, !shape.patternOffset)}>Pattern Offset</Label>
-                  </div>
-                </div>
+                <div className="flex gap-2">
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button variant="ghost" size="sm">[Animation Controls]</Button>
+                    </SheetTrigger>
+                    <SheetContent side="bottom" className="">
+                      <div className="grid grid-cols-3 gap-4 py-4">
+                        {/* Animation Duration Control */}
+                        <div className="space-y-2">
+                          <Label className="truncate text-xs">Animation Duration</Label>
+                          <div className="flex gap-4 items-center">
+                            <Slider
+                              value={[shape.speed]}
+                              onValueChange={([value]) => handleSpeedChange(shape.id, value)}
+                              min={0}
+                              max={1000}
+                              step={100}
+                              className="w-[60%]"
+                            />
+                            <span className="text-muted-foreground">
+                              {shape.speed}ms
+                            </span>
+                          </div>
+                        </div>
+                        {/* Pause Duration Control */}
+                        <div className="space-y-2">
+                          <Label className="truncate text-xs">Pause Duration</Label>
+                          <div className="flex gap-4 items-center">
+                            <Slider
+                              value={[shape.pauseDuration]}
+                              onValueChange={([value]) => handlePauseDurationChange(shape.id, value)}
+                              min={0}
+                              max={1000}
+                              step={100}
+                              className="w-[60%]"
+                            />
+                            <span className="text-muted-foreground">
+                              {shape.pauseDuration}ms
+                            </span>
+                          </div>
+                        </div>
+                        {/* Easing Control */}
+                        <div className="space-y-2">
+                          <Label className="truncate text-xs">Easing</Label>
+                          <Select value={shape.easing} onValueChange={(value) => handleEasingChange(shape.id, value as EasingType)}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select easing" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="linear">Linear</SelectItem>
+                              <SelectItem value="easeIn">Ease In</SelectItem>
+                              <SelectItem value="easeOut">Ease Out</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </SheetContent>
+                  </Sheet>
 
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button variant="ghost" size="sm">[Pattern Controls]</Button>
+                    </SheetTrigger>
+                    <SheetContent side="bottom">
+                    <div className="container mx-auto">
+                         <div className="grid grid-cols-2 gap-4 py-4 items-center">
+                        {/* Position Offset Control */}
+                        <div className="space-y-2">
+                          <Label className="truncate text-xs">Position Offset</Label>
+                          <div className="flex gap-4 items-center">
+                            <Slider
+                              value={[shape.offset]}
+                              onValueChange={([value]) => handleOffsetChange(shape.id, value)}
+                              min={0}
+                              max={32}
+                              step={1}
+                              className="w-[60%]"
+                            />
+                            <span className="text-muted-foreground text-xs">
+                              {shape.offset} steps
+                            </span>
+                          </div>
+                        </div>
+                        {/* Pattern Offset Toggle */}
+                        <div className="flex items-center space-x-2 cursor-pointer">
+                          <Switch
+                            checked={shape.patternOffset}
+                            onCheckedChange={(checked) => handlePatternOffsetChange(shape.id, checked)}
+                          />
+                          <Label 
+                            className={`text-xs truncate ${shape.patternOffset ? "text-3a-white" : "text-3a-paper"} cursor-pointer`} 
+                            onClick={() => handlePatternOffsetChange(shape.id, !shape.patternOffset)}
+                          >
+                            Pattern Offset
+                          </Label>
+                        </div>
+                      </div></div>
+                 
+                    </SheetContent>
+                  </Sheet>
                 </div>
               </div>
             ))}
@@ -279,7 +299,7 @@ const Page01: React.FC<PageProps> = () => {
         </div>
         <div className="relative">
           <canvas
-            className="w-full aspect-square bg-background "
+            className="w-full aspect-square bg-background"
             ref={canvasRef}
           />
           <svg

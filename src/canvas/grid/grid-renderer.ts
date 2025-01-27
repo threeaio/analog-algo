@@ -17,9 +17,6 @@ export class GridRendererCanvas {
       strokeStyle: config?.strokeStyle ?? '#fff',
       lineWidth: config?.lineWidth ?? 0.5
     };
-
-    // Subscribe to grid changes to trigger redraws
-    this.grid.subscribe(() => this.draw());
   }
 
   public draw(): void {
@@ -58,6 +55,6 @@ export class GridRendererCanvas {
 
   public destroy(): void {
     // Clean up any subscriptions or resources
-    this.grid.subscribe(() => {});
+    //this.grid.subscribe(() => {});
   }
 } 
