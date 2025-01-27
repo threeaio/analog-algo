@@ -427,7 +427,7 @@ const Page01: React.FC<PageProps> = () => {
               </div>
             ))}
             {activeShapes.length === 0 && (
-              <p className="text-muted">No active shapes</p>
+              <p className="text-3a-white/40">No active shapes</p>
             )}
           </div>
         </div>
