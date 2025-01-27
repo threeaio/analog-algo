@@ -49,6 +49,18 @@ export class PolygonWalker extends BaseShape {
     this.animationDuration = config?.animationDuration ?? 300;
     this.pauseDuration = config?.pauseDuration ?? 300;
     this.lastPauseTime = 0;
+
+    this.grid.subscribe(() => {
+            // Update current vertices
+      const offset = this.config?.offset?? 0;
+      this.vertices = this.calculateVertices();
+
+      // Update animation state if needed
+      if (this.isAnimating && this.startVertices && this.targetVertices) {
+        this.startVertices = this.calculateVertices(offset);
+        this.targetVertices = this.calculateNextVertices(offset + 1);
+      }
+    })
   }
 
   private calculateVertices(offset?: number): Point[] {
