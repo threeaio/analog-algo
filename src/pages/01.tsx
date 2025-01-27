@@ -30,55 +30,38 @@ const Page01: React.FC<PageProps> = () => {
   const [activeShapes, setActiveShapes] = React.useState<ActiveShape[]>([])
   const [selectedShape, setSelectedShape] = React.useState<string>("")
 
-  // Initialize dimension provider
+  // Initialize everything
   React.useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const svg = svgRef.current;
+    if (!canvas || !svg) return;
 
+    // 1. Initialize dimension provider
     const provider = new CanvasDimensionProvider(canvas);
+    dimensionProviderRef.current = provider;
     
+    // 2. Initialize grid system
+    const grid = new GridSystem(provider);
+    gridSystemRef.current = grid;
+
+    // 3. Initialize scene and grid renderer
+    const scene = new SceneManager(canvas, provider);
+    const svgGrid = new GridRendererSvg(svg, grid);
+    sceneRef.current = scene;
+    scene.start();
+
+    // Setup dimension change handlers
     const unsubscribe = provider.subscribe((dimensions) => {
+      // Update shapes
       activeShapes.forEach(shape => {
-        const shapeInstance = sceneRef.current?.shapes.get(shape.id);
+        const shapeInstance = scene.shapes.get(shape.id);
         if (shapeInstance) {
           shapeInstance.updateDimensions(dimensions);
         }
       });
-    });
-    dimensionProviderRef.current = provider;
-    
-    return () => {
-      unsubscribe();
-    };
-  }, []);
 
-  // Initialize grid after dimension provider is set
-  React.useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !dimensionProviderRef.current) return;
-    const newGrid = new GridSystem(dimensionProviderRef.current);  
-    gridSystemRef.current = newGrid;
-  }, []);
-
-  // Initialize scene after both grid and dimension provider are set
-  React.useEffect(() => {
-    const canvas = canvasRef.current;
-    const svg = svgRef.current;
-    if (!canvas || !svg || !dimensionProviderRef.current || !gridSystemRef.current) return;
-
-    const scene = new SceneManager(canvas, dimensionProviderRef.current);
-
-    // Initialize both grid renderers
-    // const canvasGrid = new GridRendererCanvas(canvas.getContext('2d')!, gridSystemRef.current);
-    const svgGrid = new GridRendererSvg(svg, gridSystemRef.current);
-    // scene.addLayer(canvasGrid);
-
-    sceneRef.current = scene;
-    scene.start();
-
-    const unsubscribe = dimensionProviderRef.current.subscribe((dimensions) => {
+      // Update canvas/svg size
       scene.updateCanvasSize(dimensions);
-      // Update SVG dimensions
       svg.setAttribute('width', dimensions.width.toString());
       svg.setAttribute('height', dimensions.height.toString());
       svg.setAttribute('viewBox', `0 0 ${dimensions.width} ${dimensions.height}`);
@@ -88,6 +71,8 @@ const Page01: React.FC<PageProps> = () => {
       scene.stop();
       unsubscribe();
       svgGrid.destroy();
+      grid.destroy();
+      provider.destroy();
     };
   }, []);
 
