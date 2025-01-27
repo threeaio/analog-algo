@@ -23,10 +23,10 @@ interface ActiveShape {
 const Page01: React.FC<PageProps> = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const sceneRef = React.useRef<SceneManager | null>(null)
+  const gridSystemRef = React.useRef<GridSystem | null>(null)
+  const dimensionProviderRef = React.useRef<DimensionProvider | null>(null);
   const [activeShapes, setActiveShapes] = React.useState<ActiveShape[]>([])
   const [selectedShape, setSelectedShape] = React.useState<string>("")
-  const [gridSystem, setGrid] = React.useState<GridSystem | undefined>(undefined);
-  const [dimensionProvider, setDimensionProvider] = React.useState<DimensionProvider | undefined>(undefined);
 
   // Initialize dimension provider
   React.useEffect(() => {
@@ -43,7 +43,8 @@ const Page01: React.FC<PageProps> = () => {
         }
       });
     });
-    setDimensionProvider(provider);
+    dimensionProviderRef.current = provider;
+    
     return () => {
       unsubscribe();
     };
@@ -52,27 +53,26 @@ const Page01: React.FC<PageProps> = () => {
   // Initialize grid after dimension provider is set
   React.useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !dimensionProvider) return;
-    const newGrid = new GridSystem(dimensionProvider);  
-    setGrid(newGrid);
-
-  }, [dimensionProvider]);
+    if (!canvas || !dimensionProviderRef.current) return;
+    const newGrid = new GridSystem(dimensionProviderRef.current);  
+    gridSystemRef.current = newGrid;
+  }, []);
 
   // Initialize scene after both grid and dimension provider are set
   React.useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !dimensionProvider || !gridSystem) return;
+    if (!canvas || !dimensionProviderRef.current || !gridSystemRef.current) return;
 
-    const scene = new SceneManager(canvas, dimensionProvider);
+    const scene = new SceneManager(canvas, dimensionProviderRef.current);
 
-    const canvasGrid = new GridRendererCanvas(canvas.getContext('2d')!, gridSystem);
+    const canvasGrid = new GridRendererCanvas(canvas.getContext('2d')!, gridSystemRef.current);
     scene.addLayer(canvasGrid);
     
 
     sceneRef.current = scene;
     scene.start();
 
-    const unsubscribe = dimensionProvider.subscribe((dimensions) => {
+    const unsubscribe = dimensionProviderRef.current.subscribe((dimensions) => {
       scene.updateCanvasSize(dimensions);
     });
 
@@ -80,19 +80,22 @@ const Page01: React.FC<PageProps> = () => {
       scene.stop();
       unsubscribe();
     };
-  }, [dimensionProvider, gridSystem]);
+  }, []);
 
   const handleShapeSelect = (value: string) => {
     setSelectedShape(value);
   };
 
   const handleAddShape = () => {
-    console.log('grid', gridSystem);
-    console.log('dimensionProvider', dimensionProvider);
-    if (!sceneRef.current || !selectedShape || !gridSystem) return;
+    console.log('grid', gridSystemRef.current);
+    console.log('dimensionProvider', dimensionProviderRef.current);
+    if (!sceneRef.current || !selectedShape || !gridSystemRef.current) return;
     
     const defaultSpeed = 600;
-    const shape = shapes[selectedShape].create(sceneRef.current.getContext(), gridSystem);
+    const shape = shapes[selectedShape].create(
+      sceneRef.current.getContext(), 
+      gridSystemRef.current
+    );
     const id = sceneRef.current.addShape(shape);
     shape.setAnimationDuration(defaultSpeed);
     
