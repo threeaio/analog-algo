@@ -5,7 +5,7 @@ export interface GridRenderConfig {
   lineWidth?: number;
 }
 
-export class GridRenderer {
+export class GridRendererCanvas {
   private ctx: CanvasRenderingContext2D;
   private grid: GridSystem;
   private config: GridRenderConfig;

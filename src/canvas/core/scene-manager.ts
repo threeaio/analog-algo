@@ -3,9 +3,13 @@ import { GridSystem, GridConfig } from '../grid/grid-system';
 import { CanvasManager } from './canvas-manager';
 import { PolygonWalker } from '../shapes/polygon-walker';
 import { DimensionProvider, Dimensions } from '@/canvas/core/dimension-provider';
+
+
+
 export class SceneManager {
   private canvasManager: CanvasManager;
   public shapes: Map<string, BaseShape> = new Map();
+  public layers: Map<string, {draw: () => void}> = new Map();
   // private grid: GridSystem;
   private animationFrameId: number | null = null;
   private lastFrameTime: number = 0;
@@ -25,6 +29,12 @@ export class SceneManager {
     this.shapes.forEach((shape) => {
       shape.updateDimensions(dimensions);
     });
+  }
+
+  public addLayer(layer: {draw: () => void}): string {
+    const id = this.generateId();
+    this.layers.set(id, layer);
+    return id;
   }
 
   public getContext(): CanvasRenderingContext2D {
@@ -100,6 +110,10 @@ export class SceneManager {
     for (const [_, shape] of this.shapes) {
       shape.update(deltaTime);
       shape.draw();
+    }
+
+    for (const [_, layer] of this.layers) {
+      layer.draw();
     }
 
     // Draw grid
