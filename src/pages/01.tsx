@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch"
 import { CanvasDimensionProvider, DimensionProvider, ElementDimensionProvider } from "@/canvas/core/dimension-provider"
 import { GridSystem } from "@/canvas/grid/grid-system"
 import { GridRendererCanvas } from "@/canvas/grid/grid-renderer"
+import { GridRendererSvg } from "@/canvas/grid/grid-renderer-svg"
 
 interface ActiveShape {
   id: string;
@@ -22,6 +23,7 @@ interface ActiveShape {
 
 const Page01: React.FC<PageProps> = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
+  const svgRef = React.useRef<SVGSVGElement>(null)
   const sceneRef = React.useRef<SceneManager | null>(null)
   const gridSystemRef = React.useRef<GridSystem | null>(null)
   const dimensionProviderRef = React.useRef<DimensionProvider | null>(null);
@@ -61,24 +63,31 @@ const Page01: React.FC<PageProps> = () => {
   // Initialize scene after both grid and dimension provider are set
   React.useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !dimensionProviderRef.current || !gridSystemRef.current) return;
+    const svg = svgRef.current;
+    if (!canvas || !svg || !dimensionProviderRef.current || !gridSystemRef.current) return;
 
     const scene = new SceneManager(canvas, dimensionProviderRef.current);
 
-    const canvasGrid = new GridRendererCanvas(canvas.getContext('2d')!, gridSystemRef.current);
-    scene.addLayer(canvasGrid);
-    
+    // Initialize both grid renderers
+    // const canvasGrid = new GridRendererCanvas(canvas.getContext('2d')!, gridSystemRef.current);
+    const svgGrid = new GridRendererSvg(svg, gridSystemRef.current);
+    // scene.addLayer(canvasGrid);
 
     sceneRef.current = scene;
     scene.start();
 
     const unsubscribe = dimensionProviderRef.current.subscribe((dimensions) => {
       scene.updateCanvasSize(dimensions);
+      // Update SVG dimensions
+      svg.setAttribute('width', dimensions.width.toString());
+      svg.setAttribute('height', dimensions.height.toString());
+      svg.setAttribute('viewBox', `0 0 ${dimensions.width} ${dimensions.height}`);
     });
 
     return () => {
       scene.stop();
       unsubscribe();
+      svgGrid.destroy();
     };
   }, []);
 
@@ -233,10 +242,16 @@ const Page01: React.FC<PageProps> = () => {
             )}
           </div>
         </div>
-        <canvas
-                    className=" w-full aspect-square bg-background"
-                    ref={canvasRef}
-                  />
+        <div className="relative">
+          <canvas
+            className="w-full aspect-square bg-background "
+            ref={canvasRef}
+          />
+          <svg
+            className="absolute inset-0 aspect-square pointer-events-none overflow-visible"
+            ref={svgRef}
+          />
+        </div>
       </main>
     </div>
   )
