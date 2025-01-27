@@ -50,6 +50,21 @@ export class GridSystem {
       this.subscribers = this.subscribers.filter(cb => cb !== callback);
     };
   }
+  
+  public setConfig(config: Partial<GridConfig>): void {
+    this.numRows = config?.numRows ?? this.numRows;
+    this.numCols = config?.numCols ?? this.numCols;
+    this.tickHeight = config?.tickHeight ?? this.tickHeight;
+    this.notifySubscribers();
+  }
+
+  public getConfig(): GridConfig {
+    return {
+      numRows: this.numRows,
+      numCols: this.numCols,
+      tickHeight: this.tickHeight
+    };
+  }
 
   public getDimensions(): GridDimensions {
     return {

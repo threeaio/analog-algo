@@ -9,7 +9,7 @@ import * as React from "react"
 import { shapes } from "@/config/shapes"
 import { Switch } from "@/components/ui/switch"
 import { CanvasDimensionProvider, DimensionProvider, ElementDimensionProvider } from "@/canvas/core/dimension-provider"
-import { GridSystem } from "@/canvas/grid/grid-system"
+import { GridConfig, GridSystem } from "@/canvas/grid/grid-system"
 import { GridRendererSvg } from "@/canvas/grid/grid-renderer-svg"
 import { EasingType } from "@/canvas/shapes/base-shape"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -147,13 +147,23 @@ const Page01: React.FC<PageProps> = () => {
     sceneRef.current?.updateShapeEasing(shapeId, newEasing);
   };
 
+  const handleGridConfigChange = () => {
+    const currentConfig = gridSystemRef.current?.getConfig();
+    const config = (currentConfig && currentConfig.numRows && currentConfig.numRows > 10) ? {numRows: 8, numCols: 8, tickHeight: 4} : {numRows: 24, numCols: 24, tickHeight: 4};
+    if (config) {
+      gridSystemRef.current?.setConfig(config);
+    }
+  };
+
   return (
     <div className="p-8 dark uppercase text-xs">
       <main className="grid grid-cols-2 gap-8 h-full">
+        
         <div className="space-y-6">
           {/* Shape Selector */}
           <div className="space-y-2">
             <div className="flex gap-2 items-start">
+            <Button onClick={() => handleGridConfigChange()}>Set Grid Config</Button>
               <Select value={selectedShape} onValueChange={handleShapeSelect}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="Select a shape" />

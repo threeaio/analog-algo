@@ -16,6 +16,8 @@ interface VertexIndex {
   index: number;
 }
 
+type IndicesCalculator = (gridConfig: GridConfig) => VertexIndex[];
+
 export class PolygonWalker extends BaseShape {
   private vertices: Point[];
   private targetVertices: Point[];
@@ -27,14 +29,19 @@ export class PolygonWalker extends BaseShape {
   private lastPauseTime: number;
   private config: PolygonConfig;
   private grid: GridSystem;
-  private initialIndices: VertexIndex[];
+  private calculateIndices: IndicesCalculator;
   private ticks: number = 0;
 
-  constructor(ctx: CanvasRenderingContext2D, initialIndices: VertexIndex[], grid: GridSystem, config?: PolygonConfig) {
+  constructor(
+    ctx: CanvasRenderingContext2D, 
+    calculateIndices: IndicesCalculator,
+    grid: GridSystem, 
+    config?: PolygonConfig
+  ) {
     super(ctx, config?.pattern);
     this.config = config ?? {};
     this.grid = grid;
-    this.initialIndices = initialIndices;
+    this.calculateIndices = calculateIndices;
     
     this.vertices = this.calculateVertices();
     this.targetVertices = [];
@@ -47,8 +54,9 @@ export class PolygonWalker extends BaseShape {
   private calculateVertices(offset?: number): Point[] {
     const gridPoints = this.grid.getPerimeterPoints();
     const currentOffset = (offset ?? this.config.offset ?? 0) + this.ticks;
+    const gridConfig = this.grid.getConfig();
     
-    return this.initialIndices.map(({ index }) => {
+    return this.calculateIndices(gridConfig).map(({ index }) => {
       const pointIndex = (index + currentOffset) % gridPoints.length;
       return gridPoints[pointIndex];
     });
@@ -56,13 +64,13 @@ export class PolygonWalker extends BaseShape {
 
   private calculateNextVertices(offset: number): Point[] {
     const gridPoints = this.grid.getPerimeterPoints();
-    return this.initialIndices.map(({ index }) => {
+    const gridConfig = this.grid.getConfig();
+    
+    return this.calculateIndices(gridConfig).map(({ index }) => {
       const pointIndex = (index + offset + this.ticks) % gridPoints.length;
       return gridPoints[pointIndex];
     });
   }
-
-
 
   public draw(): void {
     const cellSize = this.grid.getCellSize();
@@ -185,30 +193,32 @@ export class PolygonWalker extends BaseShape {
 
   // Factory methods
   static createTriangle(ctx: CanvasRenderingContext2D, grid: GridSystem, config?: PolygonConfig): PolygonWalker {
-    const numRows = config?.gridConfig?.numRows ?? 8;
-    const numCols = config?.gridConfig?.numCols ?? 8;
+    const calculateTriangleIndices = (gridConfig: GridConfig): VertexIndex[] => {
+      const numRows = gridConfig.numRows ?? 8;
+      const numCols = gridConfig.numCols ?? 8;
+      return [
+        { index: 0 },
+        { index: numRows },
+        { index: numRows + numCols }
+      ];
+    };
     
-    const initialVertices = [
-      { index: 0 },
-      { index: numRows },
-      { index: numRows + numCols }
-    ];
-    
-    return new PolygonWalker(ctx, initialVertices, grid, config);
+    return new PolygonWalker(ctx, calculateTriangleIndices, grid, config);
   }
 
   static createRectangle(ctx: CanvasRenderingContext2D, grid: GridSystem, config?: PolygonConfig): PolygonWalker {
-    const numRows = config?.gridConfig?.numRows ?? 8;
-    const numCols = config?.gridConfig?.numCols ?? 8;
+    const calculateRectangleIndices = (gridConfig: GridConfig): VertexIndex[] => {
+      const numRows = gridConfig.numRows ?? 8;
+      const numCols = gridConfig.numCols ?? 8;
+      return [
+        { index: 0 },
+        { index: numCols },
+        { index: numRows + numCols },
+        { index: numRows * 2 + numCols }
+      ];
+    };
     
-    const initialVertices = [
-      { index: 0 },
-      { index: numCols },
-      { index: numRows + numCols },
-      { index: numRows * 2 + numCols }
-    ];
-    
-    return new PolygonWalker(ctx, initialVertices, grid, config);
+    return new PolygonWalker(ctx, calculateRectangleIndices, grid, config);
   }
 
   static createRegularPolygon(
@@ -217,16 +227,18 @@ export class PolygonWalker extends BaseShape {
     grid: GridSystem,
     config?: PolygonConfig
   ): PolygonWalker {
-    const numRows = config?.gridConfig?.numRows ?? 8;
-    const numCols = config?.gridConfig?.numCols ?? 8;
-    const totalPoints = (numRows + numCols) * 2;
-    const pointsPerSide = Math.floor(totalPoints / sides);
+    const calculateRegularPolygonIndices = (gridConfig: GridConfig): VertexIndex[] => {
+      const numRows = gridConfig.numRows ?? 8;
+      const numCols = gridConfig.numCols ?? 8;
+      const totalPoints = (numRows + numCols) * 2;
+      const pointsPerSide = Math.floor(totalPoints / sides);
+      
+      return Array.from(
+        { length: sides }, 
+        (_, i) => ({ index: (i * pointsPerSide) % totalPoints })
+      );
+    };
     
-    const initialVertices = Array.from(
-      { length: sides }, 
-      (_, i) => ({ index: (i * pointsPerSide) % totalPoints })
-    );
-    
-    return new PolygonWalker(ctx, initialVertices, grid, config);
+    return new PolygonWalker(ctx, calculateRegularPolygonIndices, grid, config);
   }
 } 
