@@ -185,7 +185,7 @@ const Page01: React.FC<PageProps> = () => {
           <div className="space-y-12">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                Grid-Seeting:<br />
+                Grid:<br />
                 Current: {gridConfig.numRows}x{gridConfig.numCols}
               </div>
               <div>
@@ -193,7 +193,8 @@ const Page01: React.FC<PageProps> = () => {
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="sm">[Open Grid Settings]</Button>
                 </SheetTrigger>
-                <SheetContent className="uppercase" side="bottom">
+                
+                <SheetContent title="Grid Settings" className="uppercase" side="bottom">
                   <div className="container mx-auto">
                     <div className="grid grid-cols-3 gap-4 py-4">
                       {/* Rows Control */}
@@ -256,7 +257,7 @@ const Page01: React.FC<PageProps> = () => {
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                Shape:<br />
+                Shapes:<br />
               </div>
               <div className="flex gap-2 items-center">
               <Select  value={selectedShape} onValueChange={handleShapeSelect}>
@@ -287,7 +288,7 @@ const Page01: React.FC<PageProps> = () => {
             {activeShapes.map(shape => (
               <div key={shape.id} className="grid grid-cols-2 gap-4 group">
                 <div className="flex justify-start items-start gap-4">
-                  <h3 className="uppercase font-display tracking-widest">{shapes[shape.type].label}</h3>
+                  <h3 className=" tracking-widest">{shapes[shape.type].label}</h3>
                   <div className="text-muted-foreground text-xs space-y-0.5">
                     <div className={`transition-opacity duration-300 ${openPanels[shape.id]?.animation ? 'opacity-100' : 'opacity-20 group-hover:opacity-100'}`}>
                       Speed: {shape.speed}ms<br />
@@ -305,7 +306,7 @@ const Page01: React.FC<PageProps> = () => {
                     <SheetTrigger asChild className="self-start">
                       <Button variant="ghost" size="sm">[Animation Controls]</Button>
                     </SheetTrigger>
-                    <SheetContent className="uppercase" side="bottom">
+                    <SheetContent title="Animation Controls" className="uppercase" side="bottom">
                       <div className="grid grid-cols-3 gap-4 py-4">
                         {/* Animation Duration Control */}
                         <div className="space-y-2">
@@ -359,7 +360,7 @@ const Page01: React.FC<PageProps> = () => {
                     </SheetContent>
                   </Sheet>
 
-                  <Sheet onOpenChange={(isOpen) => handleSheetOpenChange(shape.id, 'pattern', isOpen)}>
+                  <Sheet  onOpenChange={(isOpen) => handleSheetOpenChange(shape.id, 'pattern', isOpen)}>
                     <SheetTrigger asChild className="self-start">
                       <Button variant="ghost" size="sm">[Pattern Controls]</Button>
                     </SheetTrigger>
@@ -412,7 +413,7 @@ const Page01: React.FC<PageProps> = () => {
               </div>
             ))}
             {activeShapes.length === 0 && (
-              <p className="text-muted-foreground">No active shapes</p>
+              <p className="text-muted">No active shapes</p>
             )}
           </div>
         </div>
