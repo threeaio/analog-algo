@@ -53,7 +53,7 @@ const Page01: React.FC<PageProps> = () => {
     const canvas = canvasRef.current;
     if (!canvas || !dimensionProvider) return;
 
-    const newGrid = new GridSystem(canvas.getContext('2d')!, dimensionProvider);
+    const newGrid = new GridSystem(dimensionProvider);
     setGrid(newGrid);
 
   }, [dimensionProvider]);
@@ -160,7 +160,6 @@ const Page01: React.FC<PageProps> = () => {
 
           {/* Active Shapes Controls */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Active Shapes</h2>
             {activeShapes.map(shape => (
               <div key={shape.id} className="py-4 space-y-4">
                 <div className="flex justify-between items-center">

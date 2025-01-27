@@ -7,90 +7,133 @@ export interface GridConfig {
   tickHeight?: number;
 }
 
+export interface GridDimensions {
+  width: number;
+  height: number;
+  cellWidth: number;
+  cellHeight: number;
+  tickHeight: number;
+}
+
 export class GridSystem {
-  private ctx: CanvasRenderingContext2D;
   private numRows: number;
   private numCols: number;
   private tickHeight: number;
   private width: number;
   private height: number;
-  private dimensionProvider: DimensionProvider;
-  constructor(ctx: CanvasRenderingContext2D, dimensionProvider: DimensionProvider, config?: GridConfig) {
-    this.ctx = ctx;
-    this.dimensionProvider = dimensionProvider;
+  private subscribers: ((dimensions: GridDimensions) => void)[] = [];
+
+  constructor(dimensionProvider: DimensionProvider, config?: GridConfig) {
     this.numRows = config?.numRows ?? 8;
     this.numCols = config?.numCols ?? 8;
     this.tickHeight = config?.tickHeight ?? 7;
-    this.width = dimensionProvider.getDimensions().width;
-    this.height = dimensionProvider.getDimensions().height;
+    
+    const dimensions = dimensionProvider.getDimensions();
+    this.width = dimensions.width;
+    this.height = dimensions.height;
 
-    this.dimensionProvider.subscribe((dimensions) => {
+    dimensionProvider.subscribe((dimensions) => {
       this.width = dimensions.width;
       this.height = dimensions.height;
+      this.notifySubscribers();
     });
   }
 
-  public getCellSize(): number {
-    return this.width / this.numCols; // Since we're using a square grid, width/numCols === height/numRows
+  private notifySubscribers(): void {
+    const dimensions = this.getDimensions();
+    this.subscribers.forEach(callback => callback(dimensions));
   }
 
-  public draw() {
-    
-    const rowHeight = this.height / this.numRows;
-    const colWidth = this.width / this.numCols;
+  public subscribe(callback: (dimensions: GridDimensions) => void): () => void {
+    this.subscribers.push(callback);
+    return () => {
+      this.subscribers = this.subscribers.filter(cb => cb !== callback);
+    };
+  }
 
-    this.ctx.strokeStyle = '#fff';
-    this.ctx.lineWidth = 0.5;
+  public getDimensions(): GridDimensions {
+    return {
+      width: this.width,
+      height: this.height,
+      cellWidth: this.width / this.numCols,
+      cellHeight: this.height / this.numRows,
+      tickHeight: this.tickHeight
+    };
+  }
 
+  public getCellSize(): number {
+    return this.width / this.numCols;
+  }
+
+  public getGridLines(): { horizontal: Point[][]; vertical: Point[][] } {
+    const dims = this.getDimensions();
+    const horizontal: Point[][] = [];
+    const vertical: Point[][] = [];
+
+    // Horizontal lines
     for (let y = 0; y <= this.numRows; y++) {
-      this.ctx.beginPath();
-      this.ctx.moveTo(0, y * rowHeight);
-      this.ctx.lineTo(this.width, y * rowHeight);
-      this.ctx.stroke();
+      horizontal.push([
+        { x: 0, y: y * dims.cellHeight },
+        { x: dims.width, y: y * dims.cellHeight }
+      ]);
+    }
 
-      for (let x = 0; x <= this.numCols; x++) {
-        if (y === 0) {
-          this.ctx.beginPath();
-          this.ctx.moveTo(x * colWidth, y * rowHeight);
-          this.ctx.lineTo(x * colWidth, y * rowHeight + this.tickHeight);
-          this.ctx.stroke();
-        } else if (y === this.numRows) {
-          this.ctx.beginPath();
-          this.ctx.moveTo(x * colWidth, y * rowHeight);
-          this.ctx.lineTo(x * colWidth, y * rowHeight - this.tickHeight);
-          this.ctx.stroke();
+    // Vertical lines with ticks
+    for (let x = 0; x <= this.numCols; x++) {
+      const points: Point[] = [];
+      for (let y = 0; y <= this.numRows; y++) {
+        const isTop = y === 0;
+        const isBottom = y === this.numRows;
+        const yPos = y * dims.cellHeight;
+
+        if (isTop) {
+          points.push(
+            { x: x * dims.cellWidth, y: yPos },
+            { x: x * dims.cellWidth, y: yPos + this.tickHeight }
+          );
+        } else if (isBottom) {
+          points.push(
+            { x: x * dims.cellWidth, y: yPos },
+            { x: x * dims.cellWidth, y: yPos - this.tickHeight }
+          );
         } else {
-          this.ctx.beginPath();
-          this.ctx.moveTo(x * colWidth, y * rowHeight - this.tickHeight);
-          this.ctx.lineTo(x * colWidth, y * rowHeight + this.tickHeight);
-          this.ctx.stroke();
+          points.push(
+            { x: x * dims.cellWidth, y: yPos - this.tickHeight },
+            { x: x * dims.cellWidth, y: yPos + this.tickHeight }
+          );
         }
       }
+      vertical.push(points);
     }
+
+    return { horizontal, vertical };
   }
 
   public getPerimeterPoints(): Point[] {
+    const dims = this.getDimensions();
     const points: Point[] = [];
-    const rowHeight = this.height / this.numRows;
-    const colWidth = this.width / this.numCols;
 
     // Top edge
     for (let x = 0; x <= this.numCols; x++) {
-      points.push({ x: x * colWidth, y: 0 });
+      points.push({ x: x * dims.cellWidth, y: 0 });
     }
     // Right edge
     for (let y = 1; y <= this.numRows; y++) {
-      points.push({ x: this.width, y: y * rowHeight });
+      points.push({ x: dims.width, y: y * dims.cellHeight });
     }
     // Bottom edge (reverse)
     for (let x = this.numCols - 1; x >= 0; x--) {
-      points.push({ x: x * colWidth, y: this.height });
+      points.push({ x: x * dims.cellWidth, y: dims.height });
     }
     // Left edge (reverse)
     for (let y = this.numRows - 1; y > 0; y--) {
-      points.push({ x: 0, y: y * rowHeight });
+      points.push({ x: 0, y: y * dims.cellHeight });
     }
 
     return points;
+  }
+
+  public destroy(): void {
+    this.subscribers = [];
   }
 } 

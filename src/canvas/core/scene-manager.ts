@@ -6,14 +6,13 @@ import { DimensionProvider, Dimensions } from '@/canvas/core/dimension-provider'
 export class SceneManager {
   private canvasManager: CanvasManager;
   public shapes: Map<string, BaseShape> = new Map();
-  private grid: GridSystem;
+  // private grid: GridSystem;
   private animationFrameId: number | null = null;
   private lastFrameTime: number = 0;
   private ctx: CanvasRenderingContext2D;
 
   constructor(private canvas: HTMLCanvasElement, dimensionProvider: DimensionProvider, gridConfig?: GridConfig) {
     this.canvasManager = new CanvasManager(canvas);
-    this.grid = new GridSystem(this.canvasManager.getContext(), dimensionProvider,gridConfig);
     this.ctx = canvas.getContext('2d')!;
   }
 
@@ -104,7 +103,7 @@ export class SceneManager {
     }
 
     // Draw grid
-    this.grid.draw();
+    // this.grid.draw();
 
     this.animationFrameId = requestAnimationFrame(this.animate);
   }
