@@ -12,6 +12,7 @@ import { CanvasDimensionProvider, DimensionProvider, ElementDimensionProvider } 
 import { GridSystem } from "@/canvas/grid/grid-system"
 import { GridRendererCanvas } from "@/canvas/grid/grid-renderer"
 import { GridRendererSvg } from "@/canvas/grid/grid-renderer-svg"
+import { EasingType } from "@/canvas/shapes/base-shape"
 
 interface ActiveShape {
   id: string;
@@ -19,6 +20,8 @@ interface ActiveShape {
   speed: number;
   offset: number;
   patternOffset: boolean;
+  pauseDuration: number;
+  easing: string;
 }
 
 const Page01: React.FC<PageProps> = () => {
@@ -81,28 +84,27 @@ const Page01: React.FC<PageProps> = () => {
   };
 
   const handleAddShape = () => {
-    console.log('grid', gridSystemRef.current);
-    console.log('dimensionProvider', dimensionProviderRef.current);
     if (!sceneRef.current || !selectedShape || !gridSystemRef.current) return;
     
     const defaultSpeed = 600;
+    const defaultPauseDuration = 300;
     const shape = shapes[selectedShape].create(
       sceneRef.current.getContext(), 
       gridSystemRef.current
     );
     const id = sceneRef.current.addShape(shape);
     shape.setAnimationDuration(defaultSpeed);
+    shape.setPauseDuration(defaultPauseDuration);
     
     setActiveShapes(prev => [...prev, {
       id,
       type: selectedShape,
       speed: defaultSpeed,
       offset: 0,
-      patternOffset: false
+      patternOffset: false,
+      pauseDuration: defaultPauseDuration,
+      easing: "linear"
     }]);
-
-    // Reset selection
-    // setSelectedShape("");
   };
 
   const handleRemoveShape = (shapeId: string) => {
@@ -131,13 +133,26 @@ const Page01: React.FC<PageProps> = () => {
     sceneRef.current?.updateShapePatternOffset(shapeId, newOffset);
   };
 
+  const handlePauseDurationChange = (shapeId: string, newDuration: number) => {
+    setActiveShapes(prev => prev.map(shape => 
+      shape.id === shapeId ? { ...shape, pauseDuration: newDuration } : shape
+    ));
+    sceneRef.current?.updateShapePauseDuration(shapeId, newDuration);
+  };
+
+  const handleEasingChange = (shapeId: string, newEasing: EasingType) => {
+    setActiveShapes(prev => prev.map(shape => 
+      shape.id === shapeId ? { ...shape, easing: newEasing } : shape
+    ));
+    sceneRef.current?.updateShapeEasing(shapeId, newEasing);
+  };
+
   return (
-    <div className="p-8 dark uppercase">
+    <div className="p-8 dark uppercase text-xs">
       <main className="grid grid-cols-2 gap-8 h-full">
         <div className="space-y-6">
           {/* Shape Selector */}
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold">Add Shape</h2>
             <div className="flex gap-2 items-start">
               <Select value={selectedShape} onValueChange={handleShapeSelect}>
                 <SelectTrigger className="w-[200px]">
@@ -167,35 +182,69 @@ const Page01: React.FC<PageProps> = () => {
                 <div className="flex justify-start items-center gap-2">
                   <h3 className="uppercase font-display tracking-widest">{shapes[shape.type].label}</h3>
                   <Button 
-                    className="relative top-.5"
-                    variant="ghost" 
+                    className="relative top-.5 text-3a-paper"
+                    variant="ghost"
                     onClick={() => handleRemoveShape(shape.id)}
                   >
-                    <X className="h-4 w-4" />
+                    {/* <X className="h-4 w-4" /> */}
+                    [remove]
                   </Button>
                 </div>
                 <div className="space-y-4">
-                  {/* Speed Control */}
+                <div className="grid grid-cols-3 gap-4">
+                   {/* Speed Control */}
                   <div className="space-y-2">
-                    <Label>Animation Duration</Label>
+                    <Label className="truncate text-xs">Animation Duration</Label>
                     <div className="flex gap-4 items-center">
                       <Slider
                         value={[shape.speed]}
                         onValueChange={([value]) => handleSpeedChange(shape.id, value)}
-                        min={100}
+                        min={0}
                         max={1000}
                         step={100}
                         className="w-[60%]"
                       />
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-muted-foreground">
                         {shape.speed}ms
                       </span>
                     </div>
                   </div>
-
-                  {/* Position Offset Control */}
+                  {/* Pause Duration Control */}
                   <div className="space-y-2">
-                    <Label>Position Offset</Label>
+                    <Label className="truncate text-xs">Pause Duration</Label>
+                    <div className="flex gap-4 items-center">
+                      <Slider
+                        value={[shape.pauseDuration]}
+                        onValueChange={([value]) => handlePauseDurationChange(shape.id, value)}
+                        min={0}
+                        max={1000}
+                        step={100}
+                        className="w-[60%]"
+                      />
+                      <span className="text-muted-foreground">
+                        {shape.pauseDuration}ms
+                      </span>
+                    </div>
+                  </div>
+                    {/* Easing Control */}
+                  <div className="space-y-2">
+                    <Label className="truncate text-xs">Easing</Label>
+                    <Select value={shape.easing} onValueChange={(value) => handleEasingChange(shape.id, value as EasingType)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select easing" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="linear">Linear</SelectItem>
+                        <SelectItem value="easeIn">Ease In</SelectItem>
+                        <SelectItem value="easeOut">Ease Out</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                    {/* Position Offset Control */}
+                  <div className="space-y-2">
+                    <Label className="truncate text-xs">Position Offset</Label>
                     <div className="flex gap-4 items-center">
                       <Slider
                         value={[shape.offset]}
@@ -205,25 +254,26 @@ const Page01: React.FC<PageProps> = () => {
                         step={1}
                         className="w-[60%]"
                       />
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-muted-foreground">
                         {shape.offset} steps
                       </span>
                     </div>
                   </div>
-
-                  {/* Pattern Offset Toggle */}
+                   {/* Pattern Offset Toggle */}
                   <div className="flex items-center space-x-2 cursor-pointer">
                     <Switch
                       checked={shape.patternOffset}
                       onCheckedChange={(checked) => handlePatternOffsetChange(shape.id, checked)}
                     />
-                    <Label className={`${shape.patternOffset ? "text-3a-white" : "text-3a-paper"} cursor-pointer`} onClick={() => handlePatternOffsetChange(shape.id, !shape.patternOffset)}>Pattern Offset</Label>
+                    <Label className={`text-xs truncate ${shape.patternOffset ? "text-3a-white" : "text-3a-paper"} cursor-pointer`} onClick={() => handlePatternOffsetChange(shape.id, !shape.patternOffset)}>Pattern Offset</Label>
                   </div>
+                </div>
+
                 </div>
               </div>
             ))}
             {activeShapes.length === 0 && (
-              <p className="text-sm text-muted-foreground">No active shapes</p>
+              <p className="text-muted-foreground">No active shapes</p>
             )}
           </div>
         </div>

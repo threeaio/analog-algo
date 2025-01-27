@@ -1,4 +1,4 @@
-import { BaseShape } from '../shapes/base-shape';
+import { BaseShape, EasingType } from '../shapes/base-shape';
 import { GridSystem, GridConfig } from '../grid/grid-system';
 import { CanvasManager } from './canvas-manager';
 import { PolygonWalker } from '../shapes/polygon-walker';
@@ -82,6 +82,20 @@ export class SceneManager {
     const shape = this.shapes.get(id);
     if (shape instanceof PolygonWalker) {
       shape.setPatternOffset(offset);
+    }
+  }
+
+  public updateShapePauseDuration(id: string, duration: number): void {
+    const shape = this.shapes.get(id);
+    if (shape instanceof PolygonWalker) {
+      shape.setPauseDuration(duration);
+    }
+  }
+
+  public updateShapeEasing(id: string, easing: EasingType): void {
+    const shape = this.shapes.get(id);
+    if (shape instanceof PolygonWalker) {
+      shape.setEasing(easing);
     }
   }
 

@@ -103,6 +103,14 @@ export class PolygonWalker extends BaseShape {
     }
   }
 
+  public setPauseDuration(duration: number): void {
+    this.pauseDuration = duration;
+  }
+
+  public setEasing(easing: EasingType): void {
+    this.config.easing = easing;
+  }
+
   public updateDimensions(_dimensions: Dimensions): void {
     // Update current vertices
     this.vertices = this.calculateVertices();
