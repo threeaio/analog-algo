@@ -198,7 +198,7 @@ export class PolygonWalker extends BaseShape {
       const numCols = gridConfig.numCols ?? 8;
       return [
         { index: 0 },
-        { index: numRows },
+        { index: numCols },
         { index: numRows + numCols }
       ];
     };
@@ -214,7 +214,7 @@ export class PolygonWalker extends BaseShape {
         { index: 0 },
         { index: numCols },
         { index: numRows + numCols },
-        { index: numRows * 2 + numCols }
+        { index: numCols * 2 + numRows }
       ];
     };
     

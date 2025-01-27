@@ -32,6 +32,11 @@ const Page01: React.FC<PageProps> = () => {
   const dimensionProviderRef = React.useRef<DimensionProvider | null>(null);
   const [activeShapes, setActiveShapes] = React.useState<ActiveShape[]>([])
   const [selectedShape, setSelectedShape] = React.useState<string>("")
+  const [gridConfig, setGridConfig] = React.useState<GridConfig>({
+    numRows: 8,
+    numCols: 8,
+    tickHeight: 4
+  });
 
   // Initialize everything
   React.useEffect(() => {
@@ -147,12 +152,10 @@ const Page01: React.FC<PageProps> = () => {
     sceneRef.current?.updateShapeEasing(shapeId, newEasing);
   };
 
-  const handleGridConfigChange = () => {
-    const currentConfig = gridSystemRef.current?.getConfig();
-    const config = (currentConfig && currentConfig.numRows && currentConfig.numRows > 10) ? {numRows: 8, numCols: 8, tickHeight: 4} : {numRows: 24, numCols: 24, tickHeight: 4};
-    if (config) {
-      gridSystemRef.current?.setConfig(config);
-    }
+  const handleGridConfigChange = (key: keyof GridConfig, value: number) => {
+    const newConfig = { ...gridConfig, [key]: value };
+    setGridConfig(newConfig);
+    gridSystemRef.current?.setConfig(newConfig);
   };
 
   return (
@@ -162,10 +165,84 @@ const Page01: React.FC<PageProps> = () => {
         <div className="space-y-6">
           {/* Shape Selector */}
           <div className="space-y-2">
-            <div className="flex gap-2 items-start">
-            <Button onClick={() => handleGridConfigChange()}>Set Grid Config</Button>
-              <Select value={selectedShape} onValueChange={handleShapeSelect}>
-                <SelectTrigger className="w-[200px]">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                Grid-Seeting:<br />
+                Current: {gridConfig.numRows}x{gridConfig.numCols}
+              </div>
+              <div>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="sm">[Open Grid Settings]</Button>
+                </SheetTrigger>
+                <SheetContent className="uppercase" side="bottom">
+                  <div className="container mx-auto">
+                    <div className="grid grid-cols-3 gap-4 py-4">
+                      {/* Rows Control */}
+                      <div className="space-y-2">
+                        <Label className="truncate text-xs">Rows</Label>
+                        <div className="flex gap-4 items-center">
+                          <Slider
+                            value={[gridConfig.numRows ?? 8]}
+                            onValueChange={([value]) => handleGridConfigChange('numRows', value)}
+                            min={4}
+                            max={32}
+                            step={4}
+                            className="w-[60%]"
+                          />
+                          <span className="text-muted-foreground text-xs">
+                            {gridConfig.numRows}
+                          </span>
+                        </div>
+                      </div>
+                      {/* Columns Control */}
+                      <div className="space-y-2">
+                        <Label className="truncate text-xs">Columns</Label>
+                        <div className="flex gap-4 items-center">
+                          <Slider
+                            value={[gridConfig.numCols ?? 8]}
+                            onValueChange={([value]) => handleGridConfigChange('numCols', value)}
+                            min={4}
+                            max={32}
+                            step={4}
+                            className="w-[60%]"
+                          />
+                          <span className="text-muted-foreground text-xs">
+                            {gridConfig.numCols}
+                          </span>
+                        </div>
+                      </div>
+                      {/* Tick Height Control */}
+                      <div className="space-y-2">
+                        <Label className="truncate text-xs">Tick Height</Label>
+                        <div className="flex gap-4 items-center">
+                          <Slider
+                            value={[gridConfig.tickHeight ?? 4]}
+                            onValueChange={([value]) => handleGridConfigChange('tickHeight', value)}
+                            min={2}
+                            max={8}
+                            step={1}
+                            className="w-[60%]"
+                          />
+                          <span className="text-muted-foreground text-xs">
+                            {gridConfig.tickHeight}px
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                Shape:<br />
+              </div>
+              <div className="flex gap-2 items-center">
+              <Select  value={selectedShape} onValueChange={handleShapeSelect}>
+                <SelectTrigger className="flex-1">
                   <SelectValue placeholder="Select a shape" />
                 </SelectTrigger>
                 <SelectContent>
@@ -177,34 +254,29 @@ const Page01: React.FC<PageProps> = () => {
                 </SelectContent>
               </Select>
               <Button 
+                variant="ghost"
                 onClick={handleAddShape} 
                 disabled={!selectedShape}
               >
-                <Plus className="h-4 w-4" />
-              </Button>
+                  <span className="text-3a-paper relative -top-[1.5px]">[</span><Plus className="h-4 w-4" /><span className="text-3a-paper relative -top-[1.5px]">]</span>
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Active Shapes List */}
           <div className="space-y-4">
             {activeShapes.map(shape => (
-              <div key={shape.id} className="py-4 space-y-4">
+              <div key={shape.id} className="grid grid-cols-2 gap-4 space-y-4 group">
                 <div className="flex justify-start items-center gap-2">
                   <h3 className="uppercase font-display tracking-widest">{shapes[shape.type].label}</h3>
-                  <Button 
-                    className="relative top-.5 text-3a-paper"
-                    variant="ghost"
-                    onClick={() => handleRemoveShape(shape.id)}
-                  >
-                    [remove]
-                  </Button>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col opacity-20 group-hover:opacity-100 transition-opacity duration-300">
                   <Sheet>
-                    <SheetTrigger asChild>
+                    <SheetTrigger asChild className="self-start">
                       <Button variant="ghost" size="sm">[Animation Controls]</Button>
                     </SheetTrigger>
-                    <SheetContent side="bottom" className="">
+                    <SheetContent className="uppercase" side="bottom">
                       <div className="grid grid-cols-3 gap-4 py-4">
                         {/* Animation Duration Control */}
                         <div className="space-y-2">
@@ -259,10 +331,10 @@ const Page01: React.FC<PageProps> = () => {
                   </Sheet>
 
                   <Sheet>
-                    <SheetTrigger asChild>
+                    <SheetTrigger asChild className="self-start">
                       <Button variant="ghost" size="sm">[Pattern Controls]</Button>
                     </SheetTrigger>
-                    <SheetContent side="bottom">
+                    <SheetContent className="uppercase" side="bottom">
                     <div className="container mx-auto">
                          <div className="grid grid-cols-2 gap-4 py-4 items-center">
                         {/* Position Offset Control */}
@@ -299,6 +371,14 @@ const Page01: React.FC<PageProps> = () => {
                  
                     </SheetContent>
                   </Sheet>
+
+                  <Button 
+                    className="text-3a-paper self-start"
+                    variant="ghost"
+                    onClick={() => handleRemoveShape(shape.id)}
+                  >
+                    [remove]
+                  </Button>
                 </div>
               </div>
             ))}
