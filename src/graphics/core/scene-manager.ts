@@ -1,9 +1,8 @@
-import { BaseShape, EasingType } from '../shapes/base-shape';
+import { BaseShape, EasingType, PatternConfig } from '../shapes/base-shape';
 import { CanvasManager } from './canvas-manager';
 import { PolygonWalker } from '../shapes/polygon-walker';
 import { Dimensions } from '@/graphics/core/dimension-provider';
-
-
+import { AnimationConfig } from '@/components/shapes/shape-types';
 
 export class SceneManager {
   private canvasManager: CanvasManager;
@@ -54,48 +53,28 @@ export class SceneManager {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  public updateAnimationSpeed(duration: number): void {
-    for (const [_, shape] of this.shapes) {
-      if (shape instanceof PolygonWalker) {
-        shape.setAnimationDuration(duration);
-      }
+  public updateShapeAnimationConfig(id: string, config: Partial<AnimationConfig>): void {
+    const shape = this.shapes.get(id);
+    if (!(shape instanceof PolygonWalker)) return;
+
+    if (config.speed !== undefined) {
+      shape.setAnimationDuration(config.speed);
+    }
+    if (config.pauseDuration !== undefined) {
+      shape.setPauseDuration(config.pauseDuration);
+    }
+    if (config.easing !== undefined) {
+      shape.setEasing(config.easing);
     }
   }
 
-  public updateShapeSpeed(id: string, duration: number): void {
+  public updateShapePatternConfig(id: string, config: Partial<PatternConfig>): void {
     const shape = this.shapes.get(id);
-    if (shape instanceof PolygonWalker) {
-      shape.setAnimationDuration(duration);
-    }
+    if (!(shape instanceof PolygonWalker)) return;
+    
+    shape.updatePattern(config);
   }
 
-  public updateShapeOffset(id: string, offset: number): void {
-    const shape = this.shapes.get(id);
-    if (shape instanceof PolygonWalker) {
-      shape.setOffset(offset);
-    }
-  }
-
-  public updateShapePatternOffset(id: string, offset: boolean): void {
-    const shape = this.shapes.get(id);
-    if (shape instanceof PolygonWalker) {
-      shape.setPatternOffset(offset);
-    }
-  }
-
-  public updateShapePauseDuration(id: string, duration: number): void {
-    const shape = this.shapes.get(id);
-    if (shape instanceof PolygonWalker) {
-      shape.setPauseDuration(duration);
-    }
-  }
-
-  public updateShapeEasing(id: string, easing: EasingType): void {
-    const shape = this.shapes.get(id);
-    if (shape instanceof PolygonWalker) {
-      shape.setEasing(easing);
-    }
-  }
 
   public start() {
     if (this.animationFrameId === null) {

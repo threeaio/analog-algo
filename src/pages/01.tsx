@@ -9,7 +9,12 @@ import { EasingType } from '@/graphics/shapes/base-shape';
 import GridControls from '@/components/grid/grid-controls';
 import ShapeSelector from '@/components/shapes/shape-selector';
 import ShapeControls from '@/components/shapes/shape-controls';
-import { ActiveShape, OpenPanels } from '@/components/shapes/shape-types';
+import {
+  ActiveShape,
+  OpenPanels,
+  AnimationConfig,
+  PatternConfig,
+} from '@/components/shapes/shape-types';
 
 const Page01: React.FC<PageProps> = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -94,11 +99,19 @@ const Page01: React.FC<PageProps> = () => {
       {
         id,
         type: selectedShape,
-        speed: defaultSpeed,
         offset: 0,
-        patternOffset: false,
-        pauseDuration: defaultPauseDuration,
-        easing: 'linear',
+        animation: {
+          speed: defaultSpeed,
+          pauseDuration: defaultPauseDuration,
+          easing: 'linear',
+        },
+        pattern: {
+          stripeDivisions: 16,
+          stripeWidth: 1,
+          stripeOffset: 0,
+          stripeColor: 'redDark',
+          patternOffset: false,
+        },
       },
     ]);
   };
@@ -108,39 +121,35 @@ const Page01: React.FC<PageProps> = () => {
     setActiveShapes((prev) => prev.filter((shape) => shape.id !== shapeId));
   };
 
-  const handleSpeedChange = (shapeId: string, newSpeed: number) => {
+
+  const handleAnimationConfigChange = (shapeId: string, config: Partial<AnimationConfig>) => {
     setActiveShapes((prev) =>
-      prev.map((shape) => (shape.id === shapeId ? { ...shape, speed: newSpeed } : shape))
+      prev.map((shape) =>
+        shape.id === shapeId
+          ? {
+              ...shape,
+              animation: { ...shape.animation, ...config },
+            }
+          : shape
+      )
     );
-    sceneRef.current?.updateShapeSpeed(shapeId, newSpeed);
+
+    sceneRef.current?.updateShapeAnimationConfig(shapeId, config);
   };
 
-  const handleOffsetChange = (shapeId: string, newOffset: number) => {
+  const handlePatternConfigChange = (shapeId: string, config: Partial<PatternConfig>) => {
     setActiveShapes((prev) =>
-      prev.map((shape) => (shape.id === shapeId ? { ...shape, offset: newOffset } : shape))
+      prev.map((shape) =>
+        shape.id === shapeId
+          ? {
+              ...shape,
+              pattern: { ...shape.pattern, ...config },
+            }
+          : shape
+      )
     );
-    sceneRef.current?.updateShapeOffset(shapeId, newOffset);
-  };
 
-  const handlePatternOffsetChange = (shapeId: string, newOffset: boolean) => {
-    setActiveShapes((prev) =>
-      prev.map((shape) => (shape.id === shapeId ? { ...shape, patternOffset: newOffset } : shape))
-    );
-    sceneRef.current?.updateShapePatternOffset(shapeId, newOffset);
-  };
-
-  const handlePauseDurationChange = (shapeId: string, newDuration: number) => {
-    setActiveShapes((prev) =>
-      prev.map((shape) => (shape.id === shapeId ? { ...shape, pauseDuration: newDuration } : shape))
-    );
-    sceneRef.current?.updateShapePauseDuration(shapeId, newDuration);
-  };
-
-  const handleEasingChange = (shapeId: string, newEasing: EasingType) => {
-    setActiveShapes((prev) =>
-      prev.map((shape) => (shape.id === shapeId ? { ...shape, easing: newEasing } : shape))
-    );
-    sceneRef.current?.updateShapeEasing(shapeId, newEasing);
+    sceneRef.current?.updateShapePatternConfig(shapeId, config);
   };
 
   const handleGridConfigChange = (key: keyof GridConfig, value: number) => {
@@ -203,11 +212,8 @@ const Page01: React.FC<PageProps> = () => {
               <ShapeControls
                 key={shape.id}
                 shape={shape}
-                handleSpeedChange={handleSpeedChange}
-                handlePauseDurationChange={handlePauseDurationChange}
-                handleEasingChange={handleEasingChange}
-                handleOffsetChange={handleOffsetChange}
-                handlePatternOffsetChange={handlePatternOffsetChange}
+                handleAnimationConfigChange={handleAnimationConfigChange}
+                handlePatternConfigChange={handlePatternConfigChange}
                 handleSheetOpenChange={handleSheetOpenChange}
                 handleRemoveShape={handleRemoveShape}
               />

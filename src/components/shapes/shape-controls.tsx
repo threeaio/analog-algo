@@ -11,33 +11,26 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { EasingType } from '@/graphics/shapes/base-shape';
-import { ActiveShape } from './shape-types';
+import { ActiveShape, AnimationConfig, PatternConfig } from './shape-types';
 import * as React from 'react';
 import { shapes } from '@/config/shapes';
+import { ThemeColorName, themeColors } from '@/lib/theme-colors';
 
 interface ShapeControlsProps {
   shape: ActiveShape;
-  handleSpeedChange: (shapeId: string, newSpeed: number) => void;
-  handlePauseDurationChange: (shapeId: string, newDuration: number) => void;
-  handleEasingChange: (shapeId: string, newEasing: EasingType) => void;
-  handleOffsetChange: (shapeId: string, newOffset: number) => void;
-  handlePatternOffsetChange: (shapeId: string, newOffset: boolean) => void;
+  handleAnimationConfigChange: (shapeId: string, config: Partial<AnimationConfig>) => void;
+  handlePatternConfigChange: (shapeId: string, config: Partial<PatternConfig>) => void;
   handleSheetOpenChange: (shapeId: string, panel: 'animation' | 'pattern', isOpen: boolean) => void;
   handleRemoveShape: (shapeId: string) => void;
 }
 
-const ShapeControls: React.FC<ShapeControlsProps> = (props) => {
-  const {
-    shape,
-    handleSpeedChange,
-    handlePauseDurationChange,
-    handleEasingChange,
-    handleOffsetChange,
-    handlePatternOffsetChange,
-    handleSheetOpenChange,
-    handleRemoveShape,
-  } = props;
-
+const ShapeControls: React.FC<ShapeControlsProps> = ({
+  shape,
+  handleAnimationConfigChange,
+  handlePatternConfigChange,
+  handleSheetOpenChange,
+  handleRemoveShape,
+}) => {
   const [isAnimationOpen, setIsAnimationOpen] = React.useState(false);
   const [isPatternOpen, setIsPatternOpen] = React.useState(false);
 
@@ -69,9 +62,7 @@ const ShapeControls: React.FC<ShapeControlsProps> = (props) => {
             <div className="col-span-3">
               <AnimationControls
                 shape={shape}
-                handleSpeedChange={handleSpeedChange}
-                handlePauseDurationChange={handlePauseDurationChange}
-                handleEasingChange={handleEasingChange}
+                handleAnimationConfigChange={handleAnimationConfigChange}
                 handleSheetOpenChange={handleAnimationOpenChange}
               />
             </div>
@@ -89,8 +80,7 @@ const ShapeControls: React.FC<ShapeControlsProps> = (props) => {
             <div className="col-span-3">
               <PatternControls
                 shape={shape}
-                handleOffsetChange={handleOffsetChange}
-                handlePatternOffsetChange={handlePatternOffsetChange}
+                handlePatternConfigChange={handlePatternConfigChange}
                 handleSheetOpenChange={handlePatternOpenChange}
               />
             </div>
@@ -118,11 +108,11 @@ function AnimationProperties({ shape }: AnimationPropertiesProps) {
   return (
     <dl className={`grid grid-cols-3 gap-x-2 text-xs`}>
       <dt className="col-span-2 text-right">Speed</dt>
-      <dd className="text-muted-foreground">{shape.speed}ms</dd>
+      <dd className="text-muted-foreground">{shape.animation.speed}ms</dd>
       <dt className="col-span-2 text-right">Pause</dt>
-      <dd className="text-muted-foreground">{shape.pauseDuration}ms</dd>
+      <dd className="text-muted-foreground">{shape.animation.pauseDuration}ms</dd>
       <dt className="col-span-2 text-right">Easing</dt>
-      <dd className="text-muted-foreground">{shape.easing}</dd>
+      <dd className="text-muted-foreground">{shape.animation.easing}</dd>
     </dl>
   );
 }
@@ -134,27 +124,29 @@ interface PatternPropertiesProps {
 function PatternProperties({ shape }: PatternPropertiesProps) {
   return (
     <dl className={`grid grid-cols-3 gap-x-2 text-xs`}>
-      <dt className="col-span-2 text-right">Offset</dt>
-      <dd className="text-muted-foreground">{shape.offset} steps</dd>
+      <dt className="col-span-2 text-right">Divisions</dt>
+      <dd className="text-muted-foreground">{shape.pattern.stripeDivisions}</dd>
+      <dt className="col-span-2 text-right">Stripe Width</dt>
+      <dd className="text-muted-foreground">{shape.pattern.stripeWidth}</dd>
+      <dt className="col-span-2 text-right">Stripe Offset</dt>
+      <dd className="text-muted-foreground">{shape.pattern.stripeOffset}</dd>
+      <dt className="col-span-2 text-right">Color</dt>
+      <dd className="text-muted-foreground">{shape.pattern.stripeColor}</dd>
       <dt className="col-span-2 text-right">Pattern Offset</dt>
-      <dd className="text-muted-foreground">{shape.patternOffset ? 'Yes' : 'No'}</dd>
+      <dd className="text-muted-foreground">{shape.pattern.patternOffset ? 'Yes' : 'No'}</dd>
     </dl>
   );
 }
 
 interface AnimationControlsProps {
   shape: ActiveShape;
-  handleSpeedChange: (shapeId: string, newSpeed: number) => void;
-  handlePauseDurationChange: (shapeId: string, newDuration: number) => void;
-  handleEasingChange: (shapeId: string, newEasing: EasingType) => void;
+  handleAnimationConfigChange: (shapeId: string, config: Partial<AnimationConfig>) => void;
   handleSheetOpenChange: (isOpen: boolean) => void;
 }
 
 function AnimationControls({
   shape,
-  handleSpeedChange,
-  handlePauseDurationChange,
-  handleEasingChange,
+  handleAnimationConfigChange,
   handleSheetOpenChange,
 }: AnimationControlsProps) {
   return (
@@ -170,35 +162,39 @@ function AnimationControls({
             <Label className="truncate text-xs">Animation Duration</Label>
             <div className="flex items-center gap-4">
               <Slider
-                value={[shape.speed]}
-                onValueChange={([value]) => handleSpeedChange(shape.id, value)}
+                value={[shape.animation.speed]}
+                onValueChange={([value]) => handleAnimationConfigChange(shape.id, { speed: value })}
                 min={0}
                 max={1000}
                 step={100}
                 className="w-[60%]"
               />
-              <span className="text-muted-foreground">{shape.speed}ms</span>
+              <span className="text-muted-foreground">{shape.animation.speed}ms</span>
             </div>
           </div>
           <div className="space-y-2">
             <Label className="truncate text-xs">Pause Duration</Label>
             <div className="flex items-center gap-4">
               <Slider
-                value={[shape.pauseDuration]}
-                onValueChange={([value]) => handlePauseDurationChange(shape.id, value)}
+                value={[shape.animation.pauseDuration]}
+                onValueChange={([value]) =>
+                  handleAnimationConfigChange(shape.id, { pauseDuration: value })
+                }
                 min={0}
                 max={1000}
                 step={100}
                 className="w-[60%]"
               />
-              <span className="text-muted-foreground">{shape.pauseDuration}ms</span>
+              <span className="text-muted-foreground">{shape.animation.pauseDuration}ms</span>
             </div>
           </div>
           <div className="space-y-2">
             <Label className="truncate text-xs">Easing</Label>
             <Select
-              value={shape.easing}
-              onValueChange={(value) => handleEasingChange(shape.id, value as EasingType)}
+              value={shape.animation.easing}
+              onValueChange={(value) =>
+                handleAnimationConfigChange(shape.id, { easing: value as EasingType })
+              }
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select easing" />
@@ -218,15 +214,13 @@ function AnimationControls({
 
 interface PatternControlsProps {
   shape: ActiveShape;
-  handleOffsetChange: (shapeId: string, newOffset: number) => void;
-  handlePatternOffsetChange: (shapeId: string, newOffset: boolean) => void;
+  handlePatternConfigChange: (shapeId: string, config: Partial<PatternConfig>) => void;
   handleSheetOpenChange: (isOpen: boolean) => void;
 }
 
 function PatternControls({
   shape,
-  handleOffsetChange,
-  handlePatternOffsetChange,
+  handlePatternConfigChange,
   handleSheetOpenChange,
 }: PatternControlsProps) {
   return (
@@ -238,29 +232,97 @@ function PatternControls({
       </SheetTrigger>
       <SheetContent className="text-xs uppercase" side="bottom">
         <div className="container mx-auto">
-          <div className="grid grid-cols-2 items-center gap-4 py-4">
+          <div className="grid grid-cols-2 gap-4 py-4">
             <div className="space-y-2">
-              <Label className="truncate text-xs">Position Offset</Label>
+              <Label className="truncate text-xs">Divisions</Label>
               <div className="flex items-center gap-4">
                 <Slider
-                  value={[shape.offset]}
-                  onValueChange={([value]) => handleOffsetChange(shape.id, value)}
-                  min={0}
+                  value={[shape.pattern.stripeDivisions]}
+                  onValueChange={([value]) =>
+                    handlePatternConfigChange(shape.id, { stripeDivisions: value })
+                  }
+                  min={2}
                   max={32}
                   step={1}
                   className="w-[60%]"
                 />
-                <span className="text-muted-foreground text-xs">{shape.offset} steps</span>
+                <span className="text-muted-foreground text-xs">
+                  {shape.pattern.stripeDivisions}
+                </span>
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label className="truncate text-xs">Stripe Width</Label>
+              <div className="flex items-center gap-4">
+                <Slider
+                  value={[shape.pattern.stripeWidth]}
+                  onValueChange={([value]) =>
+                    handlePatternConfigChange(shape.id, { stripeWidth: value })
+                  }
+                  min={1}
+                  max={shape.pattern.stripeDivisions - shape.pattern.stripeOffset}
+                  step={1}
+                  className="w-[60%]"
+                />
+                <span className="text-muted-foreground text-xs">{shape.pattern.stripeWidth}</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="truncate text-xs">Stripe Offset</Label>
+              <div className="flex items-center gap-4">
+                <Slider
+                  value={[shape.pattern.stripeOffset]}
+                  onValueChange={([value]) =>
+                    handlePatternConfigChange(shape.id, { stripeOffset: value })
+                  }
+                  min={0}
+                  max={shape.pattern.stripeDivisions - shape.pattern.stripeWidth}
+                  step={1}
+                  className="w-[60%]"
+                />
+                <span className="text-muted-foreground text-xs">{shape.pattern.stripeOffset}</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="truncate text-xs">Stripe Color</Label>
+              <Select
+                value={shape.pattern.stripeColor}
+                onValueChange={(value) =>
+                  handlePatternConfigChange(shape.id, { stripeColor: value as ThemeColorName })
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select color" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(themeColors).map((color) => (
+                    <SelectItem key={color} value={color}>
+                      {color}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="flex cursor-pointer items-center space-x-2">
               <Switch
-                checked={shape.patternOffset}
-                onCheckedChange={(checked) => handlePatternOffsetChange(shape.id, checked)}
+                checked={shape.pattern.patternOffset}
+                onCheckedChange={(checked) =>
+                  handlePatternConfigChange(shape.id, { patternOffset: checked })
+                }
               />
               <Label
-                className={`truncate text-xs ${shape.patternOffset ? 'text-3a-white' : 'text-3a-paper'} cursor-pointer`}
-                onClick={() => handlePatternOffsetChange(shape.id, !shape.patternOffset)}
+                className={`truncate text-xs ${
+                  shape.pattern.patternOffset ? 'text-3a-white' : 'text-3a-paper'
+                } cursor-pointer`}
+                onClick={() =>
+                  handlePatternConfigChange(shape.id, {
+                    patternOffset: !shape.pattern.patternOffset,
+                  })
+                }
               >
                 Pattern Offset
               </Label>

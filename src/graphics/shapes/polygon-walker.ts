@@ -1,6 +1,6 @@
 import { BaseShape, Point, PatternConfig, EasingType } from './base-shape';
 import { GridSystem, GridConfig } from '../grid/grid-system';
-import { Dimensions } from '@/canvas/core/dimension-provider';
+import { Dimensions } from '@/graphics/core/dimension-provider';
 
 interface PolygonConfig {
   gridConfig?: GridConfig;
@@ -120,6 +120,22 @@ export class PolygonWalker extends BaseShape {
   public setPatternOffset(offset: boolean): void {
     if (this.pattern) {
       this.pattern.patternOffset = offset;
+    }
+  }
+
+  public updatePattern(config: Partial<PatternConfig>): void {
+    if (!this.pattern) {
+      this.pattern = {
+        stripeOrientation: 'vertical',
+        stripeColor: 'redDark',
+        stripeDivisions: 16,
+        stripeWidth: 1,
+        stripeOffset: 0,
+        patternOffset: false,
+        ...config
+      };
+    } else {
+      Object.assign(this.pattern, config);
     }
   }
 

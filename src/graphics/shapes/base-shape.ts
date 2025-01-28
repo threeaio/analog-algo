@@ -1,4 +1,5 @@
 import { Dimensions } from "@/graphics/core/dimension-provider";
+import { ThemeColorName, getThemeColorHex } from "@/lib/theme-colors";
 
 export interface Point {
   x: number;
@@ -9,9 +10,11 @@ export type EasingType = 'linear' | 'easeIn' | 'easeOut';
 
 export interface PatternConfig {
   stripeOrientation: 'vertical' | 'horizontal';
-  stripeColor: string;
-  stripeDivisions: number; // how many stripes per grid cell (e.g., 2 means half cell width)
-  patternOffset?: boolean; // whether to offset the pattern start
+  stripeColor: ThemeColorName;
+  stripeDivisions: number; // total divisions per cell (e.g., 16 means 16 units per cell)
+  stripeWidth: number; // width of the actual stripe in units
+  stripeOffset: number; // position where stripe starts within the division
+  patternOffset?: boolean; // whether to offset the pattern start between cells
 }
 
 export abstract class BaseShape {
@@ -54,9 +57,9 @@ export abstract class BaseShape {
   protected createStripePattern(cellSize: number): CanvasPattern | null {
     if (!this.pattern) return null;
 
-    const { stripeOrientation, stripeColor, stripeDivisions, patternOffset } = this.pattern;
-    const stripeSize = cellSize / stripeDivisions;
-    const stripeThickness = stripeSize * 1.15; // Make stripes a bit thicker
+    const { stripeOrientation, stripeColor, stripeDivisions, stripeWidth, stripeOffset, patternOffset } = this.pattern;
+    const divisionSize = cellSize / stripeDivisions;
+    const stripeThickness = divisionSize * stripeWidth;
     
     // Create a pattern canvas
     const patternCanvas = document.createElement('canvas');
@@ -72,16 +75,17 @@ export abstract class BaseShape {
     patternCtx.fillRect(0, 0, size, size);
 
     // Draw stripes
-    patternCtx.fillStyle = stripeColor;
+    patternCtx.fillStyle = getThemeColorHex(stripeColor);
     
-    const offset = patternOffset ? stripeSize : 0;
+    const baseOffset = patternOffset ? divisionSize : 0;
+    const stripePositionOffset = divisionSize * stripeOffset;
     
     if (stripeOrientation === 'vertical') {
-      for (let x = offset; x < size; x += stripeSize * 2) {
+      for (let x = baseOffset + stripePositionOffset; x < size; x += divisionSize * stripeDivisions) {
         patternCtx.fillRect(x, 0, stripeThickness, size);
       }
     } else {
-      for (let y = offset; y < size; y += stripeSize * 2) {
+      for (let y = baseOffset + stripePositionOffset; y < size; y += divisionSize * stripeDivisions) {
         patternCtx.fillRect(0, y, size, stripeThickness);
       }
     }
