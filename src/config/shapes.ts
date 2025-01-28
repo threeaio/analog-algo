@@ -1,6 +1,6 @@
-import { GridSystem } from "@/canvas/grid/grid-system";
-import { PatternConfig } from "@/canvas/shapes/base-shape";
-import { PolygonWalker } from "@/canvas/shapes/polygon-walker";
+import { GridSystem } from "@/graphics/grid/grid-system";
+import { PatternConfig } from "@/graphics/shapes/base-shape";
+import { PolygonWalker } from "@/graphics/shapes/polygon-walker";
 
 export const basePattern: PatternConfig = {
   stripeOrientation: 'vertical',

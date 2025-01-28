@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { EasingType } from '@/canvas/shapes/base-shape';
+import { EasingType } from '@/graphics/shapes/base-shape';
 import { ActiveShape } from './shape-types';
 import * as React from 'react';
 import { shapes } from '@/config/shapes';

@@ -1,4 +1,4 @@
-import { EasingType } from '@/canvas/shapes/base-shape';
+import { EasingType } from '@/graphics/shapes/base-shape';
 
 export interface ActiveShape {
   id: string;
@@ -7,7 +7,7 @@ export interface ActiveShape {
   offset: number;
   patternOffset: boolean;
   pauseDuration: number;
-  easing: string;
+  easing: EasingType;
 }
 
 export interface OpenPanels {

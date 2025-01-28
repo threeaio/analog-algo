@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Slider } from '@/components/ui/slider';
-import { GridConfig } from '@/canvas/grid/grid-system';
+import { GridConfig } from '@/graphics/grid/grid-system';
 import * as React from 'react';
 interface GridControlsProps {
   gridConfig: GridConfig;

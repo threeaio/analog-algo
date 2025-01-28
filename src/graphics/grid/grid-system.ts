@@ -1,4 +1,4 @@
-import { DimensionProvider } from '@/canvas/core/dimension-provider';
+import { DimensionProvider } from '@/graphics/core/dimension-provider';
 import { Point } from '../shapes/base-shape';
 
 export interface GridConfig {

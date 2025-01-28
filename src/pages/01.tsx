@@ -1,14 +1,14 @@
 import type { HeadFC, PageProps } from 'gatsby';
-import { SceneManager } from '@/canvas/core/scene-manager';
+import { SceneManager } from '@/graphics/core/scene-manager';
 import * as React from 'react';
 import { shapes } from '@/config/shapes';
-import { CanvasDimensionProvider, DimensionProvider } from '@/canvas/core/dimension-provider';
-import { GridConfig, GridSystem } from '@/canvas/grid/grid-system';
-import { GridRendererSvg } from '@/canvas/grid/grid-renderer-svg';
-import { EasingType } from '@/canvas/shapes/base-shape';
-import  GridControls  from '@/components/grid/grid-controls';
-import  ShapeSelector  from '@/components/shapes/shape-selector';
-import  ShapeControls  from '@/components/shapes/shape-controls';
+import { CanvasDimensionProvider, DimensionProvider } from '@/graphics/core/dimension-provider';
+import { GridConfig, GridSystem } from '@/graphics/grid/grid-system';
+import { GridRendererSvg } from '@/graphics/grid/grid-renderer-svg';
+import { EasingType } from '@/graphics/shapes/base-shape';
+import GridControls from '@/components/grid/grid-controls';
+import ShapeSelector from '@/components/shapes/shape-selector';
+import ShapeControls from '@/components/shapes/shape-controls';
 import { ActiveShape, OpenPanels } from '@/components/shapes/shape-types';
 
 const Page01: React.FC<PageProps> = () => {
