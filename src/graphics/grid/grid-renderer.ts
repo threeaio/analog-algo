@@ -1,3 +1,4 @@
+import { getThemeColorHex } from '@/lib/theme-colors';
 import { GridSystem } from './grid-system';
 
 export interface GridRenderConfig {
@@ -14,7 +15,7 @@ export class GridRendererCanvas {
     this.ctx = ctx;
     this.grid = grid;
     this.config = {
-      strokeStyle: config?.strokeStyle ?? '#fff',
+      strokeStyle: config?.strokeStyle ?? getThemeColorHex('white'),
       lineWidth: config?.lineWidth ?? 0.5
     };
   }

@@ -1,10 +1,11 @@
 import { GridSystem } from "@/graphics/grid/grid-system";
 import { PatternConfig } from "@/graphics/shapes/base-shape";
 import { PolygonWalker } from "@/graphics/shapes/polygon-walker";
+import { getThemeColorHex } from "@/lib/theme-colors";
 
 export const basePattern: PatternConfig = {
   stripeOrientation: 'vertical',
-  stripeColor: '#c13',
+  stripeColor: getThemeColorHex('redDark'),
   stripeDivisions: 24,
 };
 
