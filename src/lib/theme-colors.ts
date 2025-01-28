@@ -44,7 +44,12 @@ interface ColorFormats {
 export function getThemeColor(colorName: ThemeColorName): ColorFormats {
   const color = getHSLFromProperty(colorMap[colorName]);
   if (!color) {
-    throw new Error(`Failed to get color value for theme color: ${colorName}`);
+    // Fallback to white if the color value cannot be retrieved (is SSR)
+    return {
+      hsl: { hue: 0, saturation: 0, lightness: 100 },
+      cssHsl: 'hsl(0, 0%, 100%)',
+      hex: '#ffffff',
+    };
   }
 
   return {

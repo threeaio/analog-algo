@@ -78,7 +78,7 @@ export abstract class BaseShape {
     patternCtx.fillRect(0, 0, size, size);
 
     // Draw stripes
-    patternCtx.fillStyle = getThemeColorHex(stripeColor);
+    patternCtx.fillStyle = window ? getThemeColorHex(stripeColor) : '#ffffff';
     
     // Calculate unit size in pixels
     const unitSize = size / totalPatternWidth;
