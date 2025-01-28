@@ -56,7 +56,7 @@ export abstract class BaseShape {
 
     const { stripeOrientation, stripeColor, stripeDivisions, patternOffset } = this.pattern;
     const stripeSize = cellSize / stripeDivisions;
-    const stripeThickness = stripeSize * 1.1; // Make stripes a bit thicker
+    const stripeThickness = stripeSize * 1.15; // Make stripes a bit thicker
     
     // Create a pattern canvas
     const patternCanvas = document.createElement('canvas');
