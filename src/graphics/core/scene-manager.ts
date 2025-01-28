@@ -2,7 +2,7 @@ import { BaseShape, EasingType } from '../shapes/base-shape';
 import { GridSystem, GridConfig } from '../grid/grid-system';
 import { CanvasManager } from './canvas-manager';
 import { PolygonWalker } from '../shapes/polygon-walker';
-import { DimensionProvider, Dimensions } from '@/canvas/core/dimension-provider';
+import { DimensionProvider, Dimensions } from '@/graphics/core/dimension-provider';
 
 
 
