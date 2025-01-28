@@ -191,7 +191,7 @@ const Page01: React.FC<PageProps> = () => {
               <div>
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm">[Open Grid Settings]</Button>
+                  <Button variant="ghost" size="sm">Open Grid Settings</Button>
                 </SheetTrigger>
                 
                 <SheetContent title="Grid Settings" className="uppercase" side="bottom">
@@ -277,8 +277,8 @@ const Page01: React.FC<PageProps> = () => {
                 onClick={handleAddShape} 
                 disabled={!selectedShape}
               >
-                  <span className="text-3a-paper relative -top-[1.5px]">[</span><Plus className="h-4 w-4" /><span className="text-3a-paper relative -top-[1.5px]">]</span>
-                </Button>
+                <Plus className="h-4 w-4" />
+              </Button>
               </div>
             </div>
           </div>
@@ -287,38 +287,31 @@ const Page01: React.FC<PageProps> = () => {
           <div className="space-y-4">
             {activeShapes.map(shape => (
               <div key={shape.id} className="grid grid-cols-2 gap-4 group">
-                <div className="flex justify-start items-start gap-4">
+                <div className="flex justify-start items-baseline gap-4">
                   <div className="grid grid-cols-4 gap-4 w-full">
                     <h3 className="tracking-widest">{shapes[shape.type].label}</h3>
-                    <div className="col-span-2 text-right text-xs space-y-0.5">
-                      <div className={`transition-opacity duration-300 ${openPanels[shape.id]?.animation ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
-                        Speed<br />
-                        Pause<br />
-                        Easing
-                      </div>
-                      <div className={`transition-opacity duration-300 ${openPanels[shape.id]?.pattern ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
-                        Offset<br />
-                        Pattern Offset
-                      </div>
+                    <div className="col-span-3 space-y-0.5">
+                      <dl className={`grid grid-cols-3 gap-x-2 text-xs transition-opacity duration-300  ${openPanels[shape.id]?.animation ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
+                        <dt className="text-right col-span-2">Speed</dt>
+                        <dd className="text-muted-foreground">{shape.speed}ms</dd>
+                        <dt className="text-right col-span-2">Pause</dt>
+                        <dd className="text-muted-foreground">{shape.pauseDuration}ms</dd>
+                        <dt className="text-right col-span-2">Easing</dt>
+                        <dd className="text-muted-foreground">{shape.easing}</dd>
+                      </dl>
+                      <dl className={`grid grid-cols-3 gap-x-2 text-xs transition-opacity duration-300 ${openPanels[shape.id]?.pattern ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
+                        <dt className="text-right col-span-2">Offset</dt>
+                        <dd className="text-muted-foreground">{shape.offset} steps</dd>
+                        <dt className="text-right col-span-2">Pattern Offset</dt>
+                        <dd className="text-muted-foreground">{shape.patternOffset ? "Yes" : "No"}</dd>
+                      </dl>
                     </div>
-                    <div className="text-muted-foreground text-xs space-y-0.5">
-                      <div className={`transition-opacity duration-300 ${openPanels[shape.id]?.animation ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
-                        {shape.speed}ms<br />
-                        {shape.pauseDuration}ms<br />
-                        {shape.easing}
-                      </div>
-                      <div className={`transition-opacity duration-300 ${openPanels[shape.id]?.pattern ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
-                        {shape.offset} steps<br />
-                        {shape.patternOffset ? "Yes" : "No"}
-                      </div>
-                    </div>
-                    <div></div>
                   </div>
                 </div>
                 <div className="flex flex-col opacity-40 group-hover:opacity-100 transition-opacity duration-300">
                   <Sheet onOpenChange={(isOpen) => handleSheetOpenChange(shape.id, 'animation', isOpen)}>
                     <SheetTrigger asChild className="self-start">
-                      <Button variant="ghost" size="sm">[Animation Controls]</Button>
+                      <Button variant="ghost" size="sm">Animation Controls</Button>
                     </SheetTrigger>
                     <SheetContent title="Animation Controls" className="uppercase" side="bottom">
                       <div className="grid grid-cols-3 gap-4 py-4">
@@ -376,7 +369,7 @@ const Page01: React.FC<PageProps> = () => {
 
                   <Sheet  onOpenChange={(isOpen) => handleSheetOpenChange(shape.id, 'pattern', isOpen)}>
                     <SheetTrigger asChild className="self-start">
-                      <Button variant="ghost" size="sm">[Pattern Controls]</Button>
+                      <Button variant="ghost" size="sm">Pattern Controls</Button>
                     </SheetTrigger>
                     <SheetContent className="uppercase" side="bottom">
                     <div className="container mx-auto">
@@ -417,11 +410,11 @@ const Page01: React.FC<PageProps> = () => {
                   </Sheet>
 
                   <Button 
-                    className="text-3a-paper self-start"
+                    className="self-start"
                     variant="ghost"
                     onClick={() => handleRemoveShape(shape.id)}
                   >
-                    [remove]
+                    Remove
                   </Button>
                 </div>
               </div>
