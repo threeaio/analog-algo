@@ -232,72 +232,76 @@ function PatternControls({
       </SheetTrigger>
       <SheetContent className="text-xs uppercase" side="bottom">
         <div className="container mx-auto">
-          <div className="grid grid-cols-2 gap-4 py-4">
-            <div className="space-y-2">
-              <Label className="truncate text-xs">Stripe Width</Label>
-              <div className="flex items-center gap-4">
-                <Slider
-                  value={[shape.pattern.stripeWidth]}
-                  onValueChange={([value]) =>
-                    handlePatternConfigChange(shape.id, { stripeWidth: value })
-                  }
-                  min={1}
-                  max={24}
-                  step={1}
-                  className="w-[60%]"
-                />
-                <span className="text-muted-foreground text-xs">{shape.pattern.stripeWidth}</span>
+          <div className="grid grid-cols-3 gap-4 py-4">
+            <div className="space-y-8">
+              <div className="space-y-2">
+                <Label className="truncate text-xs">Stripe Width</Label>
+                <div className="flex items-center gap-4">
+                  <Slider
+                    value={[shape.pattern.stripeWidth]}
+                    onValueChange={([value]) =>
+                      handlePatternConfigChange(shape.id, { stripeWidth: value })
+                    }
+                    min={1}
+                    max={24}
+                    step={1}
+                    className="w-[60%]"
+                  />
+                  <span className="text-muted-foreground text-xs">{shape.pattern.stripeWidth}</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="truncate text-xs">Gap Width</Label>
+                <div className="flex items-center gap-4">
+                  <Slider
+                    value={[shape.pattern.stripeGap]}
+                    onValueChange={([value]) =>
+                      handlePatternConfigChange(shape.id, { stripeGap: value })
+                    }
+                    min={0}
+                    max={24}
+                    step={1}
+                    className="w-[60%]"
+                  />
+                  <span className="text-muted-foreground text-xs">{shape.pattern.stripeGap}</span>
+                </div>
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label className="truncate text-xs">Gap Width</Label>
-              <div className="flex items-center gap-4">
-                <Slider
-                  value={[shape.pattern.stripeGap]}
-                  onValueChange={([value]) =>
-                    handlePatternConfigChange(shape.id, { stripeGap: value })
-                  }
-                  min={0}
-                  max={24}
-                  step={1}
-                  className="w-[60%]"
-                />
-                <span className="text-muted-foreground text-xs">{shape.pattern.stripeGap}</span>
+            <div className="space-y-8">
+              <div className="space-y-2">
+                <Label className="truncate text-xs">Repetitions</Label>
+                <div className="flex items-center gap-4">
+                  <Slider
+                    value={[shape.pattern.repetitions]}
+                    onValueChange={([value]) =>
+                      handlePatternConfigChange(shape.id, { repetitions: value })
+                    }
+                    min={1}
+                    max={16}
+                    step={1}
+                    className="w-[60%]"
+                  />
+                  <span className="text-muted-foreground text-xs">{shape.pattern.repetitions}</span>
+                </div>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="truncate text-xs">Repetitions</Label>
-              <div className="flex items-center gap-4">
-                <Slider
-                  value={[shape.pattern.repetitions]}
-                  onValueChange={([value]) =>
-                    handlePatternConfigChange(shape.id, { repetitions: value })
-                  }
-                  min={1}
-                  max={16}
-                  step={1}
-                  className="w-[60%]"
-                />
-                <span className="text-muted-foreground text-xs">{shape.pattern.repetitions}</span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="truncate text-xs">Pattern Offset</Label>
-              <div className="flex items-center gap-4">
-                <Slider
-                  value={[shape.pattern.stripeOffset]}
-                  onValueChange={([value]) =>
-                    handlePatternConfigChange(shape.id, { stripeOffset: value })
-                  }
-                  min={0}
-                  max={1}
-                  step={0.1}
-                  className="w-[60%]"
-                />
-                <span className="text-muted-foreground text-xs">{shape.pattern.stripeOffset}</span>
+              <div className="space-y-2">
+                <Label className="truncate text-xs">Pattern Offset</Label>
+                <div className="flex items-center gap-4">
+                  <Slider
+                    value={[shape.pattern.stripeOffset]}
+                    onValueChange={([value]) =>
+                      handlePatternConfigChange(shape.id, { stripeOffset: value })
+                    }
+                    min={0}
+                    max={1}
+                    step={0.1}
+                    className="w-[60%]"
+                  />
+                  <span className="text-muted-foreground text-xs">
+                    {shape.pattern.stripeOffset}
+                  </span>
+                </div>
               </div>
             </div>
 
