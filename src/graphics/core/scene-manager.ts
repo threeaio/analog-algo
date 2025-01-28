@@ -1,8 +1,7 @@
 import { BaseShape, EasingType } from '../shapes/base-shape';
-import { GridSystem, GridConfig } from '../grid/grid-system';
 import { CanvasManager } from './canvas-manager';
 import { PolygonWalker } from '../shapes/polygon-walker';
-import { DimensionProvider, Dimensions } from '@/graphics/core/dimension-provider';
+import { Dimensions } from '@/graphics/core/dimension-provider';
 
 
 
@@ -10,12 +9,11 @@ export class SceneManager {
   private canvasManager: CanvasManager;
   public shapes: Map<string, BaseShape> = new Map();
   public layers: Map<string, {draw: () => void}> = new Map();
-  // private grid: GridSystem;
   private animationFrameId: number | null = null;
   private lastFrameTime: number = 0;
   private ctx: CanvasRenderingContext2D;
 
-  constructor(private canvas: HTMLCanvasElement, dimensionProvider: DimensionProvider, gridConfig?: GridConfig) {
+  constructor(private canvas: HTMLCanvasElement) {
     this.canvasManager = new CanvasManager(canvas);
     this.ctx = canvas.getContext('2d')!;
   }
@@ -129,9 +127,6 @@ export class SceneManager {
     for (const [_, layer] of this.layers) {
       layer.draw();
     }
-
-    // Draw grid
-    // this.grid.draw();
 
     this.animationFrameId = requestAnimationFrame(this.animate);
   }

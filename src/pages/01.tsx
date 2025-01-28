@@ -41,7 +41,7 @@ const Page01: React.FC<PageProps> = () => {
     gridSystemRef.current = grid;
 
     // 3. Initialize scene and grid renderer
-    const scene = new SceneManager(canvas, provider);
+    const scene = new SceneManager(canvas);
     const svgGrid = new GridRendererSvg(svg, grid);
     sceneRef.current = scene;
     scene.start();
