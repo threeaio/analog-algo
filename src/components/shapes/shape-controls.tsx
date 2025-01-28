@@ -306,24 +306,29 @@ function PatternControls({
             </div>
 
             <div className="space-y-2">
-              <Label className="truncate text-xs">Stripe Color</Label>
-              <Select
-                value={shape.pattern.stripeColor}
-                onValueChange={(value) =>
-                  handlePatternConfigChange(shape.id, { stripeColor: value as ThemeColorName })
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select color" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.keys(themeColors).map((color) => (
-                    <SelectItem key={color} value={color}>
-                      {color}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label className="truncate text-xs">Color</Label>
+              <div className="flex gap-2">
+                {['white', 'red', 'green'].map((color) => (
+                  <button
+                    key={color}
+                    onClick={() =>
+                      handlePatternConfigChange(shape.id, { stripeColor: color as ThemeColorName })
+                    }
+                    className={`h-8 w-8 border-2 transition-all ${
+                      shape.pattern.stripeColor === color
+                        ? 'scale-110 border-3a-paper'
+                        : 'border-transparent hover:border-3a-white/50'
+                    } ${
+                      color === 'white'
+                        ? 'bg-3a-white'
+                        : color === 'red'
+                          ? 'bg-3a-red'
+                          : 'bg-3a-green'
+                    }`}
+                    aria-label={`Set stripe color to ${color}`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
