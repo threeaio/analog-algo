@@ -38,7 +38,10 @@ export function parseHSL(hslString: string): HSLColor | null {
  * @param propertyName - CSS custom property name (e.g., "--color-3a-red")
  */
 export function getHSLFromProperty(propertyName: string): HSLColor | null {
-  if (typeof window === 'undefined') throw new Error('Window is not defined');
+  if (typeof window === 'undefined') {
+    console.error('Window is not defined');
+    return null;
+  };
   
   const value = getComputedStyle(document.documentElement)
     .getPropertyValue(propertyName)
