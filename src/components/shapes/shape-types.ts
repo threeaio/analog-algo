@@ -8,11 +8,12 @@ export interface AnimationConfig {
 }
 
 export interface PatternConfig {
-  stripeDivisions: number;
-  stripeWidth: number;
-  stripeOffset: number;
+  stripeOrientation: 'vertical' | 'horizontal';
   stripeColor: ThemeColorName;
-  patternOffset: boolean;
+  stripeWidth: number;     // width of the stripe in units
+  stripeGap: number;       // gap between stripes in units
+  stripeOffset: number;    // where the pattern starts (0-1)
+  repetitions: number;     // how many stripe+gap combinations to render
 }
 
 export interface ActiveShape {

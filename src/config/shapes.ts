@@ -6,9 +6,10 @@ import { getThemeColorHex } from "@/lib/theme-colors";
 export const basePattern: PatternConfig = {
   stripeOrientation: 'vertical',
   stripeColor: 'redDark',
-  stripeDivisions: 24,
+  stripeGap: 1,
   stripeWidth: 1,
   stripeOffset: 0,
+  repetitions: 1,
 };
 
 export interface ShapeConfig {

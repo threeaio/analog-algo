@@ -124,16 +124,16 @@ interface PatternPropertiesProps {
 function PatternProperties({ shape }: PatternPropertiesProps) {
   return (
     <dl className={`grid grid-cols-3 gap-x-2 text-xs`}>
-      <dt className="col-span-2 text-right">Divisions</dt>
-      <dd className="text-muted-foreground">{shape.pattern.stripeDivisions}</dd>
       <dt className="col-span-2 text-right">Stripe Width</dt>
       <dd className="text-muted-foreground">{shape.pattern.stripeWidth}</dd>
-      <dt className="col-span-2 text-right">Stripe Offset</dt>
+      <dt className="col-span-2 text-right">Gap Width</dt>
+      <dd className="text-muted-foreground">{shape.pattern.stripeGap}</dd>
+      <dt className="col-span-2 text-right">Repetitions</dt>
+      <dd className="text-muted-foreground">{shape.pattern.repetitions}</dd>
+      <dt className="col-span-2 text-right">Offset</dt>
       <dd className="text-muted-foreground">{shape.pattern.stripeOffset}</dd>
       <dt className="col-span-2 text-right">Color</dt>
       <dd className="text-muted-foreground">{shape.pattern.stripeColor}</dd>
-      <dt className="col-span-2 text-right">Pattern Offset</dt>
-      <dd className="text-muted-foreground">{shape.pattern.patternOffset ? 'Yes' : 'No'}</dd>
     </dl>
   );
 }
@@ -234,25 +234,6 @@ function PatternControls({
         <div className="container mx-auto">
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="space-y-2">
-              <Label className="truncate text-xs">Divisions</Label>
-              <div className="flex items-center gap-4">
-                <Slider
-                  value={[shape.pattern.stripeDivisions]}
-                  onValueChange={([value]) =>
-                    handlePatternConfigChange(shape.id, { stripeDivisions: value })
-                  }
-                  min={2}
-                  max={32}
-                  step={1}
-                  className="w-[60%]"
-                />
-                <span className="text-muted-foreground text-xs">
-                  {shape.pattern.stripeDivisions}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
               <Label className="truncate text-xs">Stripe Width</Label>
               <div className="flex items-center gap-4">
                 <Slider
@@ -261,7 +242,7 @@ function PatternControls({
                     handlePatternConfigChange(shape.id, { stripeWidth: value })
                   }
                   min={1}
-                  max={shape.pattern.stripeDivisions - shape.pattern.stripeOffset}
+                  max={24}
                   step={1}
                   className="w-[60%]"
                 />
@@ -270,7 +251,41 @@ function PatternControls({
             </div>
 
             <div className="space-y-2">
-              <Label className="truncate text-xs">Stripe Offset</Label>
+              <Label className="truncate text-xs">Gap Width</Label>
+              <div className="flex items-center gap-4">
+                <Slider
+                  value={[shape.pattern.stripeGap]}
+                  onValueChange={([value]) =>
+                    handlePatternConfigChange(shape.id, { stripeGap: value })
+                  }
+                  min={0}
+                  max={24}
+                  step={1}
+                  className="w-[60%]"
+                />
+                <span className="text-muted-foreground text-xs">{shape.pattern.stripeGap}</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="truncate text-xs">Repetitions</Label>
+              <div className="flex items-center gap-4">
+                <Slider
+                  value={[shape.pattern.repetitions]}
+                  onValueChange={([value]) =>
+                    handlePatternConfigChange(shape.id, { repetitions: value })
+                  }
+                  min={1}
+                  max={16}
+                  step={1}
+                  className="w-[60%]"
+                />
+                <span className="text-muted-foreground text-xs">{shape.pattern.repetitions}</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="truncate text-xs">Pattern Offset</Label>
               <div className="flex items-center gap-4">
                 <Slider
                   value={[shape.pattern.stripeOffset]}
@@ -278,8 +293,8 @@ function PatternControls({
                     handlePatternConfigChange(shape.id, { stripeOffset: value })
                   }
                   min={0}
-                  max={shape.pattern.stripeDivisions - shape.pattern.stripeWidth}
-                  step={1}
+                  max={1}
+                  step={0.1}
                   className="w-[60%]"
                 />
                 <span className="text-muted-foreground text-xs">{shape.pattern.stripeOffset}</span>
@@ -305,27 +320,6 @@ function PatternControls({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="flex cursor-pointer items-center space-x-2">
-              <Switch
-                checked={shape.pattern.patternOffset}
-                onCheckedChange={(checked) =>
-                  handlePatternConfigChange(shape.id, { patternOffset: checked })
-                }
-              />
-              <Label
-                className={`truncate text-xs ${
-                  shape.pattern.patternOffset ? 'text-3a-white' : 'text-3a-paper'
-                } cursor-pointer`}
-                onClick={() =>
-                  handlePatternConfigChange(shape.id, {
-                    patternOffset: !shape.pattern.patternOffset,
-                  })
-                }
-              >
-                Pattern Offset
-              </Label>
             </div>
           </div>
         </div>

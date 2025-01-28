@@ -1,7 +1,7 @@
 import type { HeadFC, PageProps } from 'gatsby';
 import { SceneManager } from '@/graphics/core/scene-manager';
 import * as React from 'react';
-import { shapes } from '@/config/shapes';
+import { basePattern, shapes } from '@/config/shapes';
 import { CanvasDimensionProvider, DimensionProvider } from '@/graphics/core/dimension-provider';
 import { GridConfig, GridSystem } from '@/graphics/grid/grid-system';
 import { GridRendererSvg } from '@/graphics/grid/grid-renderer-svg';
@@ -106,11 +106,7 @@ const Page01: React.FC<PageProps> = () => {
           easing: 'linear',
         },
         pattern: {
-          stripeDivisions: 16,
-          stripeWidth: 1,
-          stripeOffset: 0,
-          stripeColor: 'redDark',
-          patternOffset: false,
+          ...basePattern
         },
       },
     ]);
@@ -120,7 +116,6 @@ const Page01: React.FC<PageProps> = () => {
     sceneRef.current?.removeShape(shapeId);
     setActiveShapes((prev) => prev.filter((shape) => shape.id !== shapeId));
   };
-
 
   const handleAnimationConfigChange = (shapeId: string, config: Partial<AnimationConfig>) => {
     setActiveShapes((prev) =>

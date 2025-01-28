@@ -128,10 +128,11 @@ export class PolygonWalker extends BaseShape {
       this.pattern = {
         stripeOrientation: 'vertical',
         stripeColor: 'redDark',
-        stripeDivisions: 16,
         stripeWidth: 1,
+        stripeGap: 1,
         stripeOffset: 0,
         patternOffset: false,
+        repetitions: 1,
         ...config
       };
     } else {

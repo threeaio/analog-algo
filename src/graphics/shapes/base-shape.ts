@@ -11,9 +11,10 @@ export type EasingType = 'linear' | 'easeIn' | 'easeOut';
 export interface PatternConfig {
   stripeOrientation: 'vertical' | 'horizontal';
   stripeColor: ThemeColorName;
-  stripeDivisions: number; // total divisions per cell (e.g., 16 means 16 units per cell)
-  stripeWidth: number; // width of the actual stripe in units
-  stripeOffset: number; // position where stripe starts within the division
+  stripeWidth: number;     // width of the stripe in units (like SVG dash)
+  stripeGap: number;       // gap between stripes in units
+  stripeOffset: number;    // where the pattern starts (0-1)
+  repetitions: number;     // how many stripe+gap combinations to render
   patternOffset?: boolean; // whether to offset the pattern start between cells
 }
 
@@ -57,13 +58,15 @@ export abstract class BaseShape {
   protected createStripePattern(cellSize: number): CanvasPattern | null {
     if (!this.pattern) return null;
 
-    const { stripeOrientation, stripeColor, stripeDivisions, stripeWidth, stripeOffset, patternOffset } = this.pattern;
-    const divisionSize = cellSize / stripeDivisions;
-    const stripeThickness = divisionSize * stripeWidth;
+    const { stripeOrientation, stripeColor, stripeWidth, stripeGap, stripeOffset, repetitions, patternOffset } = this.pattern;
     
-    // Create a pattern canvas
+    // Calculate sizes
+    const patternUnit = stripeWidth + stripeGap; // One complete stripe+gap unit
+    const totalPatternWidth = patternUnit * repetitions;
+    
+    // Create a pattern canvas sized to fit the complete pattern
     const patternCanvas = document.createElement('canvas');
-    const size = cellSize * 16; // Make it bigger to ensure cleaner tiling
+    const size = cellSize;
     patternCanvas.width = size;
     patternCanvas.height = size;
     
@@ -77,16 +80,24 @@ export abstract class BaseShape {
     // Draw stripes
     patternCtx.fillStyle = getThemeColorHex(stripeColor);
     
-    const baseOffset = patternOffset ? divisionSize : 0;
-    const stripePositionOffset = divisionSize * stripeOffset;
+    // Calculate unit size in pixels
+    const unitSize = size / totalPatternWidth;
+    const stripePixelWidth = unitSize * stripeWidth;
+    const patternPixelUnit = unitSize * patternUnit;
+    
+    // Calculate offset
+    const baseOffset = patternOffset ? patternPixelUnit : 0;
+    const offsetPixels = (stripeOffset * size) % size;
     
     if (stripeOrientation === 'vertical') {
-      for (let x = baseOffset + stripePositionOffset; x < size; x += divisionSize * stripeDivisions) {
-        patternCtx.fillRect(x, 0, stripeThickness, size);
+      for (let i = 0; i < repetitions; i++) {
+        const x = baseOffset + offsetPixels + (i * patternPixelUnit);
+        patternCtx.fillRect(x, 0, stripePixelWidth, size);
       }
     } else {
-      for (let y = baseOffset + stripePositionOffset; y < size; y += divisionSize * stripeDivisions) {
-        patternCtx.fillRect(0, y, size, stripeThickness);
+      for (let i = 0; i < repetitions; i++) {
+        const y = baseOffset + offsetPixels + (i * patternPixelUnit);
+        patternCtx.fillRect(0, y, size, stripePixelWidth);
       }
     }
 
