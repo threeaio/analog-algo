@@ -20,7 +20,12 @@ interface ShapeControlsProps {
   shape: ActiveShape;
   handleAnimationConfigChange: (shapeId: string, config: Partial<AnimationConfig>) => void;
   handlePatternConfigChange: (shapeId: string, config: Partial<PatternConfig>) => void;
-  handleSheetOpenChange: (shapeId: string, panel: 'animation' | 'pattern', isOpen: boolean) => void;
+  handleSheetOpenChange: (
+    shapeId: string,
+    panel: 'animation' | 'pattern' | 'shape',
+    isOpen: boolean
+  ) => void;
+  handleShapeConfigChange: (shapeId: string, offset: number) => void;
   handleRemoveShape: (shapeId: string) => void;
 }
 
@@ -29,10 +34,12 @@ const ShapeControls: React.FC<ShapeControlsProps> = ({
   handleAnimationConfigChange,
   handlePatternConfigChange,
   handleSheetOpenChange,
+  handleShapeConfigChange,
   handleRemoveShape,
 }) => {
   const [isAnimationOpen, setIsAnimationOpen] = React.useState(false);
   const [isPatternOpen, setIsPatternOpen] = React.useState(false);
+  const [isShapeOpen, setIsShapeOpen] = React.useState(false);
 
   const handleAnimationOpenChange = (isOpen: boolean) => {
     setIsAnimationOpen(isOpen);
@@ -42,6 +49,11 @@ const ShapeControls: React.FC<ShapeControlsProps> = ({
   const handlePatternOpenChange = (isOpen: boolean) => {
     setIsPatternOpen(isOpen);
     handleSheetOpenChange(shape.id, 'pattern', isOpen);
+  };
+
+  const handleShapeOpenChange = (isOpen: boolean) => {
+    setIsShapeOpen(isOpen);
+    handleSheetOpenChange(shape.id, 'shape', isOpen);
   };
 
   return (
@@ -82,6 +94,24 @@ const ShapeControls: React.FC<ShapeControlsProps> = ({
                 shape={shape}
                 handlePatternConfigChange={handlePatternConfigChange}
                 handleSheetOpenChange={handlePatternOpenChange}
+              />
+            </div>
+          </div>
+          <div
+            className={`grid grid-cols-6 gap-4 transition-opacity duration-300 ${
+              isShapeOpen
+                ? 'opacity-100'
+                : 'opacity-40 focus-within:opacity-100 group-hover:opacity-100'
+            }`}
+          >
+            <div className="col-span-3">
+              <ShapeProperties shape={shape} />
+            </div>
+            <div className="col-span-3">
+              <ShapeControlsPanel
+                shape={shape}
+                handleShapeConfigChange={handleShapeConfigChange}
+                handleSheetOpenChange={handleShapeOpenChange}
               />
             </div>
           </div>
@@ -130,11 +160,66 @@ function PatternProperties({ shape }: PatternPropertiesProps) {
       <dd className="text-muted-foreground">{shape.pattern.stripeGap}</dd>
       <dt className="col-span-2 text-right">Repetitions</dt>
       <dd className="text-muted-foreground">{shape.pattern.repetitions}</dd>
-      <dt className="col-span-2 text-right">Offset</dt>
+      <dt className="col-span-2 text-right">Pattern Offset</dt>
       <dd className="text-muted-foreground">{shape.pattern.stripeOffset}</dd>
       <dt className="col-span-2 text-right">Color</dt>
       <dd className="text-muted-foreground">{shape.pattern.stripeColor}</dd>
     </dl>
+  );
+}
+
+interface ShapePropertiesProps {
+  shape: ActiveShape;
+}
+
+function ShapeProperties({ shape }: ShapePropertiesProps) {
+  return (
+    <dl className={`grid grid-cols-3 gap-x-2 text-xs`}>
+      <dt className="col-span-2 text-right">Offset</dt>
+      <dd className="text-muted-foreground">{shape.offset}</dd>
+    </dl>
+  );
+}
+
+interface ShapeControlsPanelProps {
+  shape: ActiveShape;
+  handleShapeConfigChange: (shapeId: string, offset: number) => void;
+  handleSheetOpenChange: (isOpen: boolean) => void;
+}
+
+function ShapeControlsPanel({
+  shape,
+  handleShapeConfigChange,
+  handleSheetOpenChange,
+}: ShapeControlsPanelProps) {
+  return (
+    <Sheet onOpenChange={handleSheetOpenChange}>
+      <SheetTrigger asChild className="self-start">
+        <Button variant="ghost" size="sm">
+          Shape Controls
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="text-xs uppercase" side="bottom">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-3 gap-4 py-4">
+            <div className="space-y-2">
+              <Label className="truncate text-xs">Offset</Label>
+              <div className="flex items-center gap-4">
+                <Slider
+                  value={[shape.offset]}
+                  onValueChange={([value]) => handleShapeConfigChange(shape.id, value)}
+                  min={0}
+                  max={10}
+                  step={1}
+                  className="w-[60%]"
+                />
+                <span className="text-muted-foreground text-xs">{shape.offset}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
@@ -311,9 +396,7 @@ function PatternControls({
                 {(['white', 'redDark', 'green'] as ThemeColorName[]).map((color) => (
                   <button
                     key={color}
-                    onClick={() =>
-                      handlePatternConfigChange(shape.id, { stripeColor: color })
-                    }
+                    onClick={() => handlePatternConfigChange(shape.id, { stripeColor: color })}
                     className={`h-8 w-8 border-2 transition-all ${
                       shape.pattern.stripeColor === color
                         ? 'scale-110 border-3a-paper'

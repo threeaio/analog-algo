@@ -28,5 +28,6 @@ export interface OpenPanels {
   [shapeId: string]: {
     animation?: boolean;
     pattern?: boolean;
+    shape?: boolean;
   };
 } 

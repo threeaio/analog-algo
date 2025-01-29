@@ -15,6 +15,7 @@ import {
   AnimationConfig,
   PatternConfig,
 } from '@/components/shapes/shape-types';
+import { PolygonWalker } from '@/graphics/shapes/polygon-walker';
 
 const Page01: React.FC<PageProps> = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -106,7 +107,7 @@ const Page01: React.FC<PageProps> = () => {
           easing: 'linear',
         },
         pattern: {
-          ...basePattern
+          ...basePattern,
         },
       },
     ]);
@@ -155,7 +156,7 @@ const Page01: React.FC<PageProps> = () => {
 
   const handleSheetOpenChange = (
     shapeId: string,
-    panel: 'animation' | 'pattern',
+    panel: 'animation' | 'pattern' | 'shape',
     isOpen: boolean
   ) => {
     setOpenPanels((prev) => ({
@@ -165,6 +166,24 @@ const Page01: React.FC<PageProps> = () => {
         [panel]: isOpen,
       },
     }));
+  };
+
+  const handleShapeConfigChange = (shapeId: string, offset: number) => {
+    setActiveShapes((prev) =>
+      prev.map((shape) =>
+        shape.id === shapeId
+          ? {
+              ...shape,
+              offset,
+            }
+          : shape
+      )
+    );
+
+    const shape = sceneRef.current?.shapes.get(shapeId);
+    if (shape && 'setOffset' in shape) {
+      (shape as PolygonWalker).setOffset(offset);
+    }
   };
 
   return (
@@ -210,6 +229,7 @@ const Page01: React.FC<PageProps> = () => {
                 handleAnimationConfigChange={handleAnimationConfigChange}
                 handlePatternConfigChange={handlePatternConfigChange}
                 handleSheetOpenChange={handleSheetOpenChange}
+                handleShapeConfigChange={handleShapeConfigChange}
                 handleRemoveShape={handleRemoveShape}
               />
             ))}
