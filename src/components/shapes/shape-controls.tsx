@@ -308,11 +308,11 @@ function PatternControls({
             <div className="space-y-2">
               <Label className="truncate text-xs">Color</Label>
               <div className="flex gap-2">
-                {['white', 'red', 'green'].map((color) => (
+                {(['white', 'redDark', 'green'] as ThemeColorName[]).map((color) => (
                   <button
                     key={color}
                     onClick={() =>
-                      handlePatternConfigChange(shape.id, { stripeColor: color as ThemeColorName })
+                      handlePatternConfigChange(shape.id, { stripeColor: color })
                     }
                     className={`h-8 w-8 border-2 transition-all ${
                       shape.pattern.stripeColor === color
@@ -321,8 +321,8 @@ function PatternControls({
                     } ${
                       color === 'white'
                         ? 'bg-3a-white'
-                        : color === 'red'
-                          ? 'bg-3a-red'
+                        : color === 'redDark'
+                          ? 'bg-3a-red-dark'
                           : 'bg-3a-green'
                     }`}
                     aria-label={`Set stripe color to ${color}`}
