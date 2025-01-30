@@ -1,19 +1,12 @@
 import { EasingType } from '@/graphics/shapes/base-shape';
 import { ThemeColorName } from '@/lib/theme-colors';
+import { PatternConfig } from '@/graphics/shapes/base-shape';
+import { PerimeterConfig } from '@/graphics/grid/grid-system';
 
 export interface AnimationConfig {
   speed: number;
   pauseDuration: number;
   easing: EasingType;
-}
-
-export interface PatternConfig {
-  stripeOrientation: 'vertical' | 'horizontal';
-  stripeColor: ThemeColorName;
-  stripeWidth: number;     // width of the stripe in units
-  stripeGap: number;       // gap between stripes in units
-  stripeOffset: number;    // where the pattern starts (0-1)
-  repetitions: number;     // how many stripe+gap combinations to render
 }
 
 export interface ActiveShape {
@@ -22,6 +15,7 @@ export interface ActiveShape {
   offset: number;
   animation: AnimationConfig;
   pattern: PatternConfig;
+  perimeterConfig?: PerimeterConfig;
 }
 
 export interface OpenPanels {
@@ -30,4 +24,6 @@ export interface OpenPanels {
     pattern?: boolean;
     shape?: boolean;
   };
-} 
+}
+
+export type { PatternConfig, PerimeterConfig }; 

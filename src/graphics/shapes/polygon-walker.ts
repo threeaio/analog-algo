@@ -1,5 +1,5 @@
 import { BaseShape, Point, PatternConfig, EasingType } from './base-shape';
-import { GridSystem, GridConfig } from '../grid/grid-system';
+import { GridSystem, GridConfig, PerimeterConfig, PerimeterLimits } from '../grid/grid-system';
 import { Dimensions } from '@/graphics/core/dimension-provider';
 
 interface PolygonConfig {
@@ -10,6 +10,7 @@ interface PolygonConfig {
   easing?: EasingType;
   pauseDuration?: number;
   animationDuration?: number;
+  perimeterConfig?: PerimeterConfig;
 }
 
 interface VertexIndex {
@@ -64,7 +65,7 @@ export class PolygonWalker extends BaseShape {
   }
 
   private calculateVertices(offset?: number): Point[] {
-    const gridPoints = this.grid.getPerimeterPoints();
+    const gridPoints = this.grid.getPerimeterPoints(this.config.perimeterConfig);
     const currentOffset = (offset ?? this.config.offset ?? 0) + this.ticks;
     const gridConfig = this.grid.getConfig();
     
@@ -75,7 +76,7 @@ export class PolygonWalker extends BaseShape {
   }
 
   private calculateNextVertices(offset: number): Point[] {
-    const gridPoints = this.grid.getPerimeterPoints();
+    const gridPoints = this.grid.getPerimeterPoints(this.config.perimeterConfig);
     const gridConfig = this.grid.getConfig();
     
     return this.calculateIndices(gridConfig).map(({ index }) => {
@@ -203,7 +204,7 @@ export class PolygonWalker extends BaseShape {
   private moveToNextPoints(): void {
     if (this.isAnimating) return;
     
-    const gridPoints = this.grid.getPerimeterPoints();
+    const gridPoints = this.grid.getPerimeterPoints(this.config.perimeterConfig);
     this.startVertices = [...this.vertices];
     
     // Calculate target positions
@@ -218,6 +219,27 @@ export class PolygonWalker extends BaseShape {
     this.isAnimating = true;
     this.animationProgress = 0;
     this.ticks++;
+  }
+
+  public setPerimeterConfig(config: Partial<PerimeterConfig>): void {
+    this.config.perimeterConfig = {
+      ...this.config.perimeterConfig,
+      ...config
+    };
+    
+    // Update current vertices
+    this.vertices = this.calculateVertices();
+
+    // Update animation state if needed
+    if (this.isAnimating && this.startVertices && this.targetVertices) {
+      this.startVertices = this.calculateVertices();
+      const offset = this.config.offset ?? 0;
+      this.targetVertices = this.calculateNextVertices(offset + 1);
+    }
+  }
+
+  public getPerimeterLimits(): PerimeterLimits {
+    return this.grid.getPerimeterLimits(this.config.perimeterConfig);
   }
 
   // Factory methods

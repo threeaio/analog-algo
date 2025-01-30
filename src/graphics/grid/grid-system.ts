@@ -15,6 +15,20 @@ export interface GridDimensions {
   tickHeight: number;
 }
 
+export interface PerimeterConfig {
+  reduceRows?: number;
+  reduceCols?: number;
+  shiftX?: number;
+  shiftY?: number;
+}
+
+export interface PerimeterLimits {
+  maxReduceRows: number;
+  maxReduceCols: number;
+  maxShiftX: number;
+  maxShiftY: number;
+}
+
 export class GridSystem {
   private numRows: number;
   private numCols: number;
@@ -124,28 +138,64 @@ export class GridSystem {
     return { horizontal, vertical };
   }
 
-  public getPerimeterPoints(): Point[] {
+  public getPerimeterPoints(config?: PerimeterConfig): Point[] {
     const dims = this.getDimensions();
     const points: Point[] = [];
+    
+    // Apply defaults and validate
+    const reduceRows = Math.min(config?.reduceRows ?? 0, this.numRows - 1);
+    const reduceCols = Math.min(config?.reduceCols ?? 0, this.numCols - 1);
+    const shiftX = config?.shiftX ?? 0;
+    const shiftY = config?.shiftY ?? 0;
+
+    // Calculate effective dimensions
+    const effectiveRows = this.numRows - reduceRows;
+    const effectiveCols = this.numCols - reduceCols;
+    const startX = shiftX * dims.cellWidth;
+    const startY = shiftY * dims.cellHeight;
 
     // Top edge
-    for (let x = 0; x <= this.numCols; x++) {
-      points.push({ x: x * dims.cellWidth, y: 0 });
+    for (let x = 0; x <= effectiveCols; x++) {
+      points.push({ 
+        x: startX + (x * dims.cellWidth), 
+        y: startY 
+      });
     }
     // Right edge
-    for (let y = 1; y <= this.numRows; y++) {
-      points.push({ x: dims.width, y: y * dims.cellHeight });
+    for (let y = 1; y <= effectiveRows; y++) {
+      points.push({ 
+        x: startX + (effectiveCols * dims.cellWidth), 
+        y: startY + (y * dims.cellHeight) 
+      });
     }
     // Bottom edge (reverse)
-    for (let x = this.numCols - 1; x >= 0; x--) {
-      points.push({ x: x * dims.cellWidth, y: dims.height });
+    for (let x = effectiveCols - 1; x >= 0; x--) {
+      points.push({ 
+        x: startX + (x * dims.cellWidth), 
+        y: startY + (effectiveRows * dims.cellHeight) 
+      });
     }
     // Left edge (reverse)
-    for (let y = this.numRows - 1; y > 0; y--) {
-      points.push({ x: 0, y: y * dims.cellHeight });
+    for (let y = effectiveRows - 1; y > 0; y--) {
+      points.push({ 
+        x: startX, 
+        y: startY + (y * dims.cellHeight) 
+      });
     }
 
     return points;
+  }
+
+  public getPerimeterLimits(currentConfig?: PerimeterConfig): PerimeterLimits {
+    const reduceRows = currentConfig?.reduceRows ?? 0;
+    const reduceCols = currentConfig?.reduceCols ?? 0;
+
+    return {
+      maxReduceRows: this.numRows - 1,
+      maxReduceCols: this.numCols - 1,
+      maxShiftX: this.numCols - (this.numCols - reduceCols),
+      maxShiftY: this.numRows - (this.numRows - reduceRows)
+    };
   }
 
   public destroy(): void {

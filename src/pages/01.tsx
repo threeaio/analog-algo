@@ -14,6 +14,7 @@ import {
   OpenPanels,
   AnimationConfig,
   PatternConfig,
+  PerimeterConfig,
 } from '@/components/shapes/shape-types';
 import { PolygonWalker } from '@/graphics/shapes/polygon-walker';
 
@@ -168,21 +169,38 @@ const Page01: React.FC<PageProps> = () => {
     }));
   };
 
-  const handleShapeConfigChange = (shapeId: string, offset: number) => {
+  const handleShapeConfigChange = (
+    shapeId: string,
+    config: {
+      offset?: number;
+      perimeterConfig?: Partial<PerimeterConfig>;
+    }
+  ) => {
     setActiveShapes((prev) =>
       prev.map((shape) =>
         shape.id === shapeId
           ? {
               ...shape,
-              offset,
+              offset: config.offset ?? shape.offset,
+              perimeterConfig: config.perimeterConfig
+                ? {
+                    ...shape.perimeterConfig,
+                    ...config.perimeterConfig,
+                  }
+                : shape.perimeterConfig,
             }
           : shape
       )
     );
 
     const shape = sceneRef.current?.shapes.get(shapeId);
-    if (shape && 'setOffset' in shape) {
-      (shape as PolygonWalker).setOffset(offset);
+    if (shape && shape instanceof PolygonWalker) {
+      if (config.offset !== undefined) {
+        shape.setOffset(config.offset);
+      }
+      if (config.perimeterConfig) {
+        shape.setPerimeterConfig(config.perimeterConfig);
+      }
     }
   };
 
