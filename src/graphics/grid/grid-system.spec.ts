@@ -217,15 +217,15 @@ describe('GridSystem', () => {
       
       // Test first 3 points of top edge
       expect(points.slice(0, 3)).toEqual([
-        { x: 0 * cellWidth, y: 0 * cellHeight },      // (0,0)
-        { x: 1 * cellWidth, y: 0 * cellHeight },      // (100,0)
-        { x: 2 * cellWidth, y: 0 * cellHeight },      // (200,0)
+        { x: 0 * cellWidth, y: 0 * cellHeight },        
+        { x: 1 * cellWidth, y: 0 * cellHeight },     
+        { x: 2 * cellWidth, y: 0 * cellHeight },     
       ]);
 
       // Test first 2 points of right edge
       expect(points.slice(8, 10)).toEqual([
-        { x: 8 * cellWidth, y: 0 * cellHeight },      // (800,0)
-        { x: 8 * cellWidth, y: 1 * cellHeight },      // (800,75)
+        { x: 8 * cellWidth, y: 0 * cellHeight },     
+        { x: 8 * cellWidth, y: 1 * cellHeight },     
       ]);
     });
 
@@ -236,8 +236,8 @@ describe('GridSystem', () => {
       
       // Test first 2 points of shifted top edge
       expect(points.slice(0, 2)).toEqual([
-        { x: 1 * cellWidth, y: 1 * cellHeight },      // (100,100)
-        { x: 2 * cellWidth, y: 1 * cellHeight },      // (200,100)
+        { x: 1 * cellWidth, y: 1 * cellHeight },     
+        { x: 2 * cellWidth, y: 1 * cellHeight },     
       ]);
     });
   });

@@ -181,7 +181,7 @@ interface ShapePropertiesProps {
 function ShapeProperties({ shape }: ShapePropertiesProps) {
   return (
     <dl className={`grid grid-cols-3 gap-x-2 text-xs`}>
-      <dt className="col-span-2 text-right">Offset</dt>
+      <dt className="col-span-2 text-right">Rotate Offset</dt>
       <dd className="text-muted-foreground">{shape.offset}</dd>
       <dt className="col-span-2 text-right">Reduce Rows</dt>
       <dd className="text-muted-foreground">{shape.perimeterConfig?.reduceRows ?? 0}</dd>
@@ -223,7 +223,7 @@ function ShapeControlsPanel({
         <div className="container mx-auto">
           <div className="grid grid-cols-3 gap-4 py-4">
             <div className="space-y-2">
-              <Label className="truncate text-xs">Offset</Label>
+              <Label className="truncate text-xs">Rotate Offset</Label>
               <div className="flex items-center gap-4">
                 <Slider
                   value={[shape.offset]}
@@ -237,99 +237,102 @@ function ShapeControlsPanel({
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label className="truncate text-xs">Reduce Rows</Label>
-              <div className="flex items-center gap-4">
-                <Slider
-                  value={[shape.perimeterConfig?.reduceRows ?? 0]}
-                  onValueChange={([value]) =>
-                    handleShapeConfigChange(shape.id, {
-                      perimeterConfig: {
-                        ...shape.perimeterConfig,
-                        reduceRows: value,
-                      },
-                    })
-                  }
-                  min={0}
-                  max={7}
-                  step={1}
-                  className="w-[60%]"
-                />
-                <span className="text-muted-foreground text-xs">
-                  {shape.perimeterConfig?.reduceRows ?? 0}
-                </span>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="truncate text-xs">Reduce Rows</Label>
+                <div className="flex items-center gap-4">
+                  <Slider
+                    value={[shape.perimeterConfig?.reduceRows ?? 0]}
+                    onValueChange={([value]) =>
+                      handleShapeConfigChange(shape.id, {
+                        perimeterConfig: {
+                          ...shape.perimeterConfig,
+                          reduceRows: value,
+                        },
+                      })
+                    }
+                    min={0}
+                    max={7}
+                    step={1}
+                    className="w-[60%]"
+                  />
+                  <span className="text-muted-foreground text-xs">
+                    {shape.perimeterConfig?.reduceRows ?? 0}
+                  </span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="truncate text-xs">Reduce Columns</Label>
+                <div className="flex items-center gap-4">
+                  <Slider
+                    value={[shape.perimeterConfig?.reduceCols ?? 0]}
+                    onValueChange={([value]) =>
+                      handleShapeConfigChange(shape.id, {
+                        perimeterConfig: {
+                          ...shape.perimeterConfig,
+                          reduceCols: value,
+                        },
+                      })
+                    }
+                    min={0}
+                    max={7}
+                    step={1}
+                    className="w-[60%]"
+                  />
+                  <span className="text-muted-foreground text-xs">
+                    {shape.perimeterConfig?.reduceCols ?? 0}
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label className="truncate text-xs">Reduce Columns</Label>
-              <div className="flex items-center gap-4">
-                <Slider
-                  value={[shape.perimeterConfig?.reduceCols ?? 0]}
-                  onValueChange={([value]) =>
-                    handleShapeConfigChange(shape.id, {
-                      perimeterConfig: {
-                        ...shape.perimeterConfig,
-                        reduceCols: value,
-                      },
-                    })
-                  }
-                  min={0}
-                  max={7}
-                  step={1}
-                  className="w-[60%]"
-                />
-                <span className="text-muted-foreground text-xs">
-                  {shape.perimeterConfig?.reduceCols ?? 0}
-                </span>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="truncate text-xs">Shift X</Label>
+                <div className="flex items-center gap-4">
+                  <Slider
+                    value={[shape.perimeterConfig?.shiftX ?? 0]}
+                    onValueChange={([value]) =>
+                      handleShapeConfigChange(shape.id, {
+                        perimeterConfig: {
+                          ...shape.perimeterConfig,
+                          shiftX: value,
+                        },
+                      })
+                    }
+                    min={0}
+                    max={7}
+                    step={1}
+                    className="w-[60%]"
+                  />
+                  <span className="text-muted-foreground text-xs">
+                    {shape.perimeterConfig?.shiftX ?? 0}
+                  </span>
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label className="truncate text-xs">Shift X</Label>
-              <div className="flex items-center gap-4">
-                <Slider
-                  value={[shape.perimeterConfig?.shiftX ?? 0]}
-                  onValueChange={([value]) =>
-                    handleShapeConfigChange(shape.id, {
-                      perimeterConfig: {
-                        ...shape.perimeterConfig,
-                        shiftX: value,
-                      },
-                    })
-                  }
-                  min={0}
-                  max={7}
-                  step={1}
-                  className="w-[60%]"
-                />
-                <span className="text-muted-foreground text-xs">
-                  {shape.perimeterConfig?.shiftX ?? 0}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="truncate text-xs">Shift Y</Label>
-              <div className="flex items-center gap-4">
-                <Slider
-                  value={[shape.perimeterConfig?.shiftY ?? 0]}
-                  onValueChange={([value]) =>
-                    handleShapeConfigChange(shape.id, {
-                      perimeterConfig: {
-                        ...shape.perimeterConfig,
-                        shiftY: value,
-                      },
-                    })
-                  }
-                  min={0}
-                  max={7}
-                  step={1}
-                  className="w-[60%]"
-                />
-                <span className="text-muted-foreground text-xs">
-                  {shape.perimeterConfig?.shiftY ?? 0}
-                </span>
+              <div className="space-y-2">
+                <Label className="truncate text-xs">Shift Y</Label>
+                <div className="flex items-center gap-4">
+                  <Slider
+                    value={[shape.perimeterConfig?.shiftY ?? 0]}
+                    onValueChange={([value]) =>
+                      handleShapeConfigChange(shape.id, {
+                        perimeterConfig: {
+                          ...shape.perimeterConfig,
+                          shiftY: value,
+                        },
+                      })
+                    }
+                    min={0}
+                    max={7}
+                    step={1}
+                    className="w-[60%]"
+                  />
+                  <span className="text-muted-foreground text-xs">
+                    {shape.perimeterConfig?.shiftY ?? 0}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
