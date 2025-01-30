@@ -148,47 +148,30 @@ export class GridSystem {
     };
   }
 
-  private calculatePerimeterIndices(config?: PerimeterConfig): { x: number; y: number }[] {
-    // Apply defaults and validate
-    const reduceRows = Math.min(config?.reduceRows ?? 0, this.numRows - 1);
-    const reduceCols = Math.min(config?.reduceCols ?? 0, this.numCols - 1);
+  public calculatePerimeterIndices(config?: PerimeterConfig): { x: number; y: number }[] {
     const shiftX = config?.shiftX ?? 0;
     const shiftY = config?.shiftY ?? 0;
-
-    // Calculate effective dimensions
     const { rows: effectiveRows, cols: effectiveCols } = this.getEffectiveDimensions(config);
     const indices: { x: number; y: number }[] = [];
 
-    // Top edge (excluding right corner)
-    for (let x = 0; x <= effectiveCols; x++) {
-      indices.push({ 
-        x: shiftX + x, 
-        y: shiftY 
-      });
+    // Top edge (0->7 at y:0)
+    for (let x = 0; x < effectiveCols; x++) {
+      indices.push({ x: shiftX + x, y: shiftY });
     }
 
-    // Right edge (excluding corners)
-    for (let y = 1; y <= effectiveRows; y++) {
-      indices.push({ 
-        x: shiftX + effectiveCols, 
-        y: shiftY + y 
-      });
+    // Right edge (8 at y:0->7)
+    for (let y = 0; y < effectiveRows; y++) {
+      indices.push({ x: shiftX + effectiveCols, y: shiftY + y });
     }
 
-    // Bottom edge (excluding corners)
-    for (let x = effectiveCols - 1; x >= 0; x--) {
-      indices.push({ 
-        x: shiftX + x, 
-        y: shiftY + effectiveRows
-      });
+    // Bottom edge (8->1 at y:8)
+    for (let x = effectiveCols; x > 0; x--) {
+      indices.push({ x: shiftX + x, y: shiftY + effectiveRows });
     }
 
-    // Left edge (excluding corners)
-    for (let y = effectiveRows - 1; y > 0; y--) {
-      indices.push({ 
-        x: shiftX, 
-        y: shiftY + y 
-      });
+    // Left edge (0 at y:8->1)
+    for (let y = effectiveRows; y > 0; y--) {
+      indices.push({ x: shiftX, y: shiftY + y });
     }
 
     return indices;
@@ -196,6 +179,7 @@ export class GridSystem {
 
   private indicesToPoints(indices: { x: number; y: number }[]): Point[] {
     const dims = this.getDimensions();
+
     return indices.map(index => ({
       x: index.x * dims.cellWidth,
       y: index.y * dims.cellHeight
