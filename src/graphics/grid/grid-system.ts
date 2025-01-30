@@ -138,10 +138,17 @@ export class GridSystem {
     return { horizontal, vertical };
   }
 
-  public getPerimeterPoints(config?: PerimeterConfig): Point[] {
-    const dims = this.getDimensions();
-    const points: Point[] = [];
-    
+  public getEffectiveDimensions(config?: PerimeterConfig): { rows: number; cols: number } {
+    const reduceRows = Math.min(config?.reduceRows ?? 0, this.numRows - 1);
+    const reduceCols = Math.min(config?.reduceCols ?? 0, this.numCols - 1);
+
+    return {
+      rows: this.numRows - reduceRows,
+      cols: this.numCols - reduceCols
+    };
+  }
+
+  private calculatePerimeterIndices(config?: PerimeterConfig): { x: number; y: number }[] {
     // Apply defaults and validate
     const reduceRows = Math.min(config?.reduceRows ?? 0, this.numRows - 1);
     const reduceCols = Math.min(config?.reduceCols ?? 0, this.numCols - 1);
@@ -149,41 +156,55 @@ export class GridSystem {
     const shiftY = config?.shiftY ?? 0;
 
     // Calculate effective dimensions
-    const effectiveRows = this.numRows - reduceRows;
-    const effectiveCols = this.numCols - reduceCols;
-    const startX = shiftX * dims.cellWidth;
-    const startY = shiftY * dims.cellHeight;
+    const { rows: effectiveRows, cols: effectiveCols } = this.getEffectiveDimensions(config);
+    const indices: { x: number; y: number }[] = [];
 
-    // Top edge
+    // Top edge (excluding right corner)
     for (let x = 0; x <= effectiveCols; x++) {
-      points.push({ 
-        x: startX + (x * dims.cellWidth), 
-        y: startY 
-      });
-    }
-    // Right edge
-    for (let y = 1; y <= effectiveRows; y++) {
-      points.push({ 
-        x: startX + (effectiveCols * dims.cellWidth), 
-        y: startY + (y * dims.cellHeight) 
-      });
-    }
-    // Bottom edge (reverse)
-    for (let x = effectiveCols - 1; x >= 0; x--) {
-      points.push({ 
-        x: startX + (x * dims.cellWidth), 
-        y: startY + (effectiveRows * dims.cellHeight) 
-      });
-    }
-    // Left edge (reverse)
-    for (let y = effectiveRows - 1; y > 0; y--) {
-      points.push({ 
-        x: startX, 
-        y: startY + (y * dims.cellHeight) 
+      indices.push({ 
+        x: shiftX + x, 
+        y: shiftY 
       });
     }
 
-    return points;
+    // Right edge (excluding corners)
+    for (let y = 1; y <= effectiveRows; y++) {
+      indices.push({ 
+        x: shiftX + effectiveCols, 
+        y: shiftY + y 
+      });
+    }
+
+    // Bottom edge (excluding corners)
+    for (let x = effectiveCols - 1; x >= 0; x--) {
+      indices.push({ 
+        x: shiftX + x, 
+        y: shiftY + effectiveRows
+      });
+    }
+
+    // Left edge (excluding corners)
+    for (let y = effectiveRows - 1; y > 0; y--) {
+      indices.push({ 
+        x: shiftX, 
+        y: shiftY + y 
+      });
+    }
+
+    return indices;
+  }
+
+  private indicesToPoints(indices: { x: number; y: number }[]): Point[] {
+    const dims = this.getDimensions();
+    return indices.map(index => ({
+      x: index.x * dims.cellWidth,
+      y: index.y * dims.cellHeight
+    }));
+  }
+
+  public getPerimeterPoints(config?: PerimeterConfig): Point[] {
+    const indices = this.calculatePerimeterIndices(config);
+    return this.indicesToPoints(indices);
   }
 
   public getPerimeterLimits(currentConfig?: PerimeterConfig): PerimeterLimits {

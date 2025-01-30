@@ -66,6 +66,8 @@ export class PolygonWalker extends BaseShape {
 
   private calculateVertices(offset?: number): Point[] {
     const gridPoints = this.grid.getPerimeterPoints(this.config.perimeterConfig);
+
+
     const currentOffset = (offset ?? this.config.offset ?? 0) + this.ticks;
     const gridConfig = this.grid.getConfig();
     
@@ -245,12 +247,13 @@ export class PolygonWalker extends BaseShape {
   // Factory methods
   static createTriangle(ctx: CanvasRenderingContext2D, grid: GridSystem, config?: PolygonConfig): PolygonWalker {
     const calculateTriangleIndices = (gridConfig: GridConfig): VertexIndex[] => {
-      const numRows = gridConfig.numRows ?? 8;
-      const numCols = gridConfig.numCols ?? 8;
+      const { rows, cols } = grid.getEffectiveDimensions(config?.perimeterConfig);
+      const totalPoints = (rows + cols) * 2;
+      
       return [
-        { index: 0 },
-        { index: numCols },
-        { index: numRows + numCols }
+        { index: 0 },                    // top-left
+        { index: Math.floor(totalPoints / 3) },  // first third
+        { index: Math.floor(totalPoints * 2 / 3) } // second third
       ];
     };
     
@@ -259,13 +262,14 @@ export class PolygonWalker extends BaseShape {
 
   static createRectangle(ctx: CanvasRenderingContext2D, grid: GridSystem, config?: PolygonConfig): PolygonWalker {
     const calculateRectangleIndices = (gridConfig: GridConfig): VertexIndex[] => {
-      const numRows = gridConfig.numRows ?? 8;
-      const numCols = gridConfig.numCols ?? 8;
+      const { rows, cols } = grid.getEffectiveDimensions(config?.perimeterConfig);
+      const totalPoints = (rows + cols) * 2;
+      
       return [
-        { index: 0 },
-        { index: numCols },
-        { index: numRows + numCols },
-        { index: numCols * 2 + numRows }
+        { index: 0 },                     // top-left
+        { index: Math.floor(totalPoints / 4) },   // first quarter
+        { index: Math.floor(totalPoints / 2) },   // halfway
+        { index: Math.floor(totalPoints * 3 / 4) } // third quarter
       ];
     };
     
@@ -279,9 +283,8 @@ export class PolygonWalker extends BaseShape {
     config?: PolygonConfig
   ): PolygonWalker {
     const calculateRegularPolygonIndices = (gridConfig: GridConfig): VertexIndex[] => {
-      const numRows = gridConfig.numRows ?? 8;
-      const numCols = gridConfig.numCols ?? 8;
-      const totalPoints = (numRows + numCols) * 2;
+      const { rows, cols } = grid.getEffectiveDimensions(config?.perimeterConfig);
+      const totalPoints = (rows + cols) * 2;
       const pointsPerSide = Math.floor(totalPoints / sides);
       
       return Array.from(
