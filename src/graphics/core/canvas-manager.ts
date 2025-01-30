@@ -1,4 +1,4 @@
-import { Dimensions } from "@/canvas/core/dimension-provider";
+import { Dimensions } from "@/graphics/core/dimension-provider";
 
 export class CanvasManager {
   public canvas: HTMLCanvasElement;
