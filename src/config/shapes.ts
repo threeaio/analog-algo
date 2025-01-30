@@ -4,11 +4,11 @@ import { PolygonWalker } from "@/graphics/shapes/polygon-walker";
 
 export const basePattern: PatternConfig = {
   stripeOrientation: 'vertical',
-  stripeColor: 'redDark',
+  stripeColor: 'white',
   stripeGap: 1,
   stripeWidth: 1,
   stripeOffset: 0,
-  repetitions: 1,
+  repetitions: 16,
 };
 
 export interface ShapeConfig {

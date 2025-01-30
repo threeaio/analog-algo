@@ -142,7 +142,7 @@ interface AnimationPropertiesProps {
 
 function AnimationProperties({ shape }: AnimationPropertiesProps) {
   return (
-    <dl className={`grid grid-cols-3 gap-x-2 text-xs`}>
+    <dl className={`grid hidden grid-cols-3 gap-x-2 text-xs`}>
       <dt className="col-span-2 text-right">Speed</dt>
       <dd className="text-muted-foreground">{shape.animation.speed}ms</dd>
       <dt className="col-span-2 text-right">Pause</dt>
@@ -159,7 +159,7 @@ interface PatternPropertiesProps {
 
 function PatternProperties({ shape }: PatternPropertiesProps) {
   return (
-    <dl className={`grid grid-cols-3 gap-x-2 text-xs`}>
+    <dl className={`grid hidden grid-cols-3 gap-x-2 text-xs`}>
       <dt className="col-span-2 text-right">Stripe Width</dt>
       <dd className="text-muted-foreground">{shape.pattern.stripeWidth}</dd>
       <dt className="col-span-2 text-right">Gap Width</dt>
@@ -180,7 +180,7 @@ interface ShapePropertiesProps {
 
 function ShapeProperties({ shape }: ShapePropertiesProps) {
   return (
-    <dl className={`grid grid-cols-3 gap-x-2 text-xs`}>
+    <dl className={`hidden grid-cols-3 gap-x-2 text-xs`}>
       <dt className="col-span-2 text-right">Rotate Offset</dt>
       <dd className="text-muted-foreground">{shape.offset}</dd>
       <dt className="col-span-2 text-right">Reduce Rows</dt>
