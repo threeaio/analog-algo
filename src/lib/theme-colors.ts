@@ -15,7 +15,7 @@ export type ThemeColorName =
   | 'black';
 
 // Mapping between color names and their CSS variable names
-const colorMap: Record<ThemeColorName, string> = {
+export const colorMap: Record<ThemeColorName, string> = {
   green: '--color-3a-green',
   red: '--color-3a-red',
   redAggressive: '--color-3a-red-aggressive',
