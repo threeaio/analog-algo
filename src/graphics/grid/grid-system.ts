@@ -138,6 +138,7 @@ export class GridSystem {
     return { horizontal, vertical };
   }
 
+
   public getEffectiveDimensions(config?: PerimeterConfig): { rows: number; cols: number } {
     const reduceRows = Math.min(config?.reduceRows ?? 0, this.numRows - 1);
     const reduceCols = Math.min(config?.reduceCols ?? 0, this.numCols - 1);

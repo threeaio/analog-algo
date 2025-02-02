@@ -48,7 +48,7 @@ export function AnimationControls({
           Animation Controls
         </Button>
       </SheetTrigger>
-      <SheetContent title="Animation Controls" className="text-xs uppercase" side="bottom">
+      <SheetContent title="Animation Controls" className="text-xs uppercase" side="left">
         <div className="grid grid-cols-3 gap-4 py-4">
           <div className="space-y-2">
             <Label className="truncate text-xs">Animation Duration</Label>

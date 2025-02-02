@@ -1,15 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Slider } from '@/components/ui/slider';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { EasingType } from '@/graphics/shapes/base-shape';
 import { ActiveShape, AnimationConfig, PatternConfig, PerimeterConfig } from './shape-types';
 import * as React from 'react';
 import { shapes } from '@/config/shapes';
@@ -18,9 +7,12 @@ import { ShapeControlsPanel } from '@/components/shapes/shape-shape-settings';
 import { ShapeProperties } from '@/components/shapes/shape-shape-settings';
 import { AnimationControls } from '@/components/shapes/shape-animation-settings';
 import { AnimationProperties } from '@/components/shapes/shape-animation-settings';
+import { GridSystem } from '@/graphics/grid/grid-system';
 
 interface ShapeControlsProps {
   shape: ActiveShape;
+  grid: GridSystem;
+  handleControlsOpenChange: (isOpen: boolean) => void;
   handleAnimationConfigChange: (shapeId: string, config: Partial<AnimationConfig>) => void;
   handlePatternConfigChange: (shapeId: string, config: Partial<PatternConfig>) => void;
   handleSheetOpenChange: (
@@ -40,6 +32,8 @@ interface ShapeControlsProps {
 
 const ShapeControls: React.FC<ShapeControlsProps> = ({
   shape,
+  grid,
+  handleControlsOpenChange,
   handleAnimationConfigChange,
   handlePatternConfigChange,
   handleSheetOpenChange,
@@ -65,8 +59,14 @@ const ShapeControls: React.FC<ShapeControlsProps> = ({
     handleSheetOpenChange(shape.id, 'shape', isOpen);
   };
 
+  React.useEffect(() => {
+    handleControlsOpenChange(isAnimationOpen || isPatternOpen || isShapeOpen);
+  }, [isAnimationOpen, isPatternOpen, isShapeOpen]);
+
   return (
-    <div className="group">
+    <div
+      className={`group`}
+    >
       <div className="grid grid-cols-8 items-baseline justify-start gap-4">
         <h3 className="tracking-widest">{shapes[shape.type].label}</h3>
         <div className={`col-span-6 space-y-2`}>
@@ -119,6 +119,7 @@ const ShapeControls: React.FC<ShapeControlsProps> = ({
             <div className="col-span-3">
               <ShapeControlsPanel
                 shape={shape}
+                grid={grid}
                 handleShapeConfigChange={handleShapeConfigChange}
                 handleSheetOpenChange={handleShapeOpenChange}
               />
