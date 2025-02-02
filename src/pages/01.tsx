@@ -210,11 +210,7 @@ const Page01: React.FC<PageProps> = () => {
   return (
     <div className="dark p-8 text-xs uppercase">
       <main className="grid h-full grid-cols-2 gap-8">
-        <div
-          className={`space-y-6 transition-all duration-300 ${
-            controlsOpen ? '-translate-x-2 opacity-10' : '-translate-x-0 opacity-100'
-          }`}
-        >
+        <div className={`space-y-6 transition-all duration-300`}>
           {/* Grid Controls */}
           <div className="space-y-12">
             <div className="grid grid-cols-2 gap-4">

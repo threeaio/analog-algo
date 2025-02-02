@@ -54,7 +54,7 @@ export function ShapeControlsPanel({
           Shape Controls
         </Button>
       </SheetTrigger>
-      <SheetContent className="text-xs uppercase" side="left">
+      <SheetContent className="text-xs uppercase" side="bottom">
         <div className="container mx-auto">
           <div className="grid grid-cols-3 gap-4 py-4">
             <div className="space-y-8">
