@@ -26,7 +26,7 @@ const IndexPage: React.FC<PageProps> = () => {
             </li>
           </ul>
         </div>
-        <div className="h-full">
+        <div className="h-full max-h-svh">
           <img
             className="h-full object-cover"
             src={bookImage}
