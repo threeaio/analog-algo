@@ -6,7 +6,7 @@ const IndexPage: React.FC<PageProps> = () => {
   return (
     <main className="h-svh p-0 font-mono text-xs uppercase">
       <div className="grid h-full grid-cols-2 gap-4">
-        <div className="grid h-full grid-cols-4 grid-rows-8 gap-1 p-24">
+        <div className="grid h-full grid-cols-4 grid-rows-4 gap-1 p-24">
           <h1 className="col-span-4 row-span-2">A tribute to "Analog Algorithm"</h1>
           <div className="col-span-2 col-start-3 row-span-2">
             <a
